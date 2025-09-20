@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+// Cross-platform compatibility detection
+define('IS_WINDOWS', DIRECTORY_SEPARATOR === '\\');
+define('IS_LINUX', !IS_WINDOWS);
+
 // Configuration
 define('FM_USERNAME', 'admin');
 define('FM_PASSWORD', 'filemanager123');
@@ -12,19 +16,38 @@ define('DB_HOST', 'localhost');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_NAME', 'mysql');
+// Linux MySQL socket support (comment out to use TCP)
+// define('DB_SOCKET', '/var/run/mysqld/mysqld.sock');
 
 // Security: Disable dangerous functions
 if (function_exists('exec')) {
     ini_set('disable_functions', 'exec,shell_exec,system,passthru,proc_open,popen');
 }
 
-// Database connection
+// Database connection with cross-platform support
 function getDBConnection() {
     try {
-        $pdo = new PDO("mysql:host=" . DB_HOST . ";charset=utf8", DB_USERNAME, DB_PASSWORD);
+        // Build DSN with socket support for Linux
+        $dsn = "mysql:charset=utf8";
+        
+        if (defined('DB_SOCKET') && IS_LINUX && file_exists(constant('DB_SOCKET'))) {
+            // Use Unix socket on Linux if available
+            $dsn .= ";unix_socket=" . constant('DB_SOCKET');
+        } else {
+            // Use TCP connection
+            $dsn .= ";host=" . DB_HOST;
+            // Add port if specified
+            if (defined('DB_PORT')) {
+                $dsn .= ";port=" . constant('DB_PORT');
+            }
+        }
+        
+        $pdo = new PDO($dsn, DB_USERNAME, DB_PASSWORD);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         return $pdo;
     } catch (PDOException $e) {
+        error_log("Database connection failed: " . $e->getMessage());
         return null;
     }
 }
@@ -76,12 +99,67 @@ function executeQuery($database, $query) {
     }
 }
 
-// Build directory tree structure
+// Cross-platform path normalization
+function normalizePath($path) {
+    $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+    return rtrim($path, DIRECTORY_SEPARATOR);
+}
+
+// Check file/directory permissions (enhanced for Linux)
+function checkPermissions($path) {
+    $permissions = [];
+    
+    if (!file_exists($path)) {
+        return ['exists' => false];
+    }
+    
+    $permissions['exists'] = true;
+    $permissions['readable'] = is_readable($path);
+    $permissions['writable'] = is_writable($path);
+    $permissions['executable'] = is_executable($path);
+    
+    if (IS_LINUX) {
+        // Get detailed Unix permissions
+        $perms = fileperms($path);
+        $permissions['octal'] = substr(sprintf('%o', $perms), -3);
+        $permissions['owner_read'] = ($perms & 0x0100) ? true : false;
+        $permissions['owner_write'] = ($perms & 0x0080) ? true : false;
+        $permissions['owner_execute'] = ($perms & 0x0040) ? true : false;
+        $permissions['group_read'] = ($perms & 0x0020) ? true : false;
+        $permissions['group_write'] = ($perms & 0x0010) ? true : false;
+        $permissions['group_execute'] = ($perms & 0x0008) ? true : false;
+        $permissions['other_read'] = ($perms & 0x0004) ? true : false;
+        $permissions['other_write'] = ($perms & 0x0002) ? true : false;
+        $permissions['other_execute'] = ($perms & 0x0001) ? true : false;
+        
+        // Get owner information if possible
+        if (function_exists('posix_getpwuid') && function_exists('fileowner')) {
+            $owner = posix_getpwuid(fileowner($path));
+            $permissions['owner'] = $owner['name'] ?? 'unknown';
+        }
+        
+        if (function_exists('posix_getgrgid') && function_exists('filegroup')) {
+            $group = posix_getgrgid(filegroup($path));
+            $permissions['group'] = $group['name'] ?? 'unknown';
+        }
+    }
+    
+    return $permissions;
+}
+
+// Enhanced directory tree building with permission checks
 function buildDirectoryTree($path, $basePath = '') {
     $tree = [];
     if (!is_dir($path)) return $tree;
     
-    $items = scandir($path);
+    $permissions = checkPermissions($path);
+    if (!$permissions['readable']) {
+        return $tree; // Skip unreadable directories
+    }
+    
+    $items = @scandir($path); // Suppress errors for permission issues
+    if ($items === false) return $tree;
+    
     foreach ($items as $item) {
         if ($item === '.' || $item === '..') continue;
         
@@ -89,11 +167,13 @@ function buildDirectoryTree($path, $basePath = '') {
         $relativePath = $basePath ? $basePath . '/' . $item : $item;
         
         if (is_dir($itemPath)) {
+            $itemPermissions = checkPermissions($itemPath);
             $tree[] = [
                 'name' => $item,
                 'path' => str_replace('\\', '/', $relativePath),
                 'type' => 'folder',
-                'children' => buildDirectoryTree($itemPath, $relativePath)
+                'permissions' => $itemPermissions,
+                'children' => $itemPermissions['readable'] ? buildDirectoryTree($itemPath, $relativePath) : []
             ];
         }
     }
@@ -127,23 +207,81 @@ function updateLastActivity() {
     $_SESSION['last_activity'] = time();
 }
 
-// Sanitize path to prevent directory traversal
+// Enhanced path sanitization for cross-platform security
 function sanitizePath($path) {
+    // Remove directory traversal attempts
     $path = str_replace(['../', '..\\', '../', '..\\'], '', $path);
+    
+    // Remove dangerous characters
     $path = str_replace(['<', '>', '|', ':', '*', '?', '"'], '', $path);
-    return trim($path, '/\\');
+    
+    // Handle null bytes (security)
+    $path = str_replace(chr(0), '', $path);
+    
+    // Normalize directory separators
+    $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+    
+    // Remove leading/trailing separators
+    $path = trim($path, DIRECTORY_SEPARATOR);
+    
+    // Additional Linux-specific checks
+    if (IS_LINUX) {
+        // Remove leading dots (hidden files protection)
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+        $parts = array_filter($parts, function($part) {
+            return !empty($part) && $part !== '.' && $part !== '..';
+        });
+        $path = implode(DIRECTORY_SEPARATOR, $parts);
+    }
+    
+    return $path;
 }
 
-// Get real path within allowed directory
+// Enhanced real path validation with cross-platform support
 function getRealPath($path) {
     $basePath = realpath(FM_ROOT_PATH);
-    $fullPath = realpath($basePath . DIRECTORY_SEPARATOR . sanitizePath($path));
+    if ($basePath === false) {
+        error_log("Invalid FM_ROOT_PATH: " . FM_ROOT_PATH);
+        return false;
+    }
     
-    if ($fullPath === false || strpos($fullPath, $basePath) !== 0) {
+    // Normalize the base path
+    $basePath = normalizePath($basePath);
+    
+    if (empty($path)) {
         return $basePath;
     }
     
-    return $fullPath;
+    $sanitizedPath = sanitizePath($path);
+    $fullPath = $basePath . DIRECTORY_SEPARATOR . $sanitizedPath;
+    
+    // Resolve the real path
+    $realPath = realpath($fullPath);
+    
+    // If realpath fails, check if parent directory exists (for new files)
+    if ($realPath === false) {
+        $parentDir = dirname($fullPath);
+        $realParent = realpath($parentDir);
+        
+        if ($realParent !== false && strpos($realParent, $basePath) === 0) {
+            // Parent is valid, return the constructed path for new files
+            return $fullPath;
+        }
+        
+        // Default to base path if all else fails
+        return $basePath;
+    }
+    
+    // Normalize and security check
+    $realPath = normalizePath($realPath);
+    
+    // Ensure the real path is within the base path (security check)
+    if (strpos($realPath, $basePath) !== 0) {
+        error_log("Path traversal attempt detected: " . $path);
+        return $basePath;
+    }
+    
+    return $realPath;
 }
 
 // Format file size
@@ -424,6 +562,7 @@ if (is_dir($currentPath)) {
         
         $filePath = $currentPath . DIRECTORY_SEPARATOR . $file;
         $relativePath = $currentDir ? $currentDir . '/' . $file : $file;
+        $permissions = checkPermissions($filePath);
         
         $items[] = [
             'name' => $file,
@@ -432,7 +571,11 @@ if (is_dir($currentPath)) {
             'size' => is_file($filePath) ? filesize($filePath) : 0,
             'modified' => filemtime($filePath),
             'icon' => is_dir($filePath) ? '📁' : getFileIcon($file),
-            'editable' => is_file($filePath) && isEditableFile($file)
+            'editable' => is_file($filePath) && isEditableFile($file),
+            'permissions' => $permissions,
+            'owner' => $permissions['owner'] ?? 'unknown',
+            'group' => $permissions['group'] ?? 'unknown',
+            'octal' => $permissions['octal'] ?? '---'
         ];
     }
     
@@ -450,7 +593,7 @@ if (is_dir($currentPath)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure File Manager</title>
+    <title>SecureFileHub - Cross-Platform File Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
     <style>
@@ -485,7 +628,11 @@ if (is_dir($currentPath)) {
     <!-- Header -->
     <header class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-xl font-bold">🗂️ Secure File Manager</h1>
+            <h1 class="text-xl font-bold">🗂️ SecureFileHub 
+                <span class="text-sm font-normal">
+                    (<?= IS_WINDOWS ? 'Windows' : 'Linux' ?> • PHP <?= PHP_VERSION ?>)
+                </span>
+            </h1>
             <div class="flex items-center space-x-4">
                 <span class="text-sm">Welcome, <?= FM_USERNAME ?></span>
                 <a href="?logout" class="bg-red-500 px-3 py-1 rounded text-sm hover:bg-red-600">Logout</a>
@@ -636,6 +783,10 @@ if (is_dir($currentPath)) {
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Modified</th>
+                                            <?php if (IS_LINUX): ?>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Permissions</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
+                                            <?php endif; ?>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                                         </tr>
                                     </thead>
@@ -660,6 +811,22 @@ if (is_dir($currentPath)) {
                                                 <td class="px-4 py-3 text-sm text-gray-600">
                                                     <?= date('Y-m-d H:i:s', $item['modified']) ?>
                                                 </td>
+                                                <?php if (IS_LINUX): ?>
+                                                <td class="px-4 py-3 text-sm text-gray-600">
+                                                    <span class="font-mono text-xs"><?= $item['octal'] ?></span>
+                                                    <div class="text-xs text-gray-500">
+                                                        <?= $item['permissions']['readable'] ? 'r' : '-' ?>
+                                                        <?= $item['permissions']['writable'] ? 'w' : '-' ?>
+                                                        <?= $item['permissions']['executable'] ? 'x' : '-' ?>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-3 text-sm text-gray-600">
+                                                    <div class="text-xs">
+                                                        <div><?= htmlspecialchars($item['owner']) ?></div>
+                                                        <div class="text-gray-400"><?= htmlspecialchars($item['group']) ?></div>
+                                                    </div>
+                                                </td>
+                                                <?php endif; ?>
                                                 <td class="px-4 py-3">
                                                     <div class="flex space-x-2">
                                                         <?php if (!$item['is_dir']): ?>
@@ -690,8 +857,15 @@ if (is_dir($currentPath)) {
                         <?php elseif ($currentTab === 'database'): ?>
                             <!-- Database Manager Content -->
                             <div class="space-y-6">
-                                <!-- Database Status & Info -->
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- System & Database Status Info -->
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div class="bg-indigo-50 p-4 rounded-lg">
+                                        <h3 class="text-sm font-semibold text-indigo-800 mb-2">💻 System Info</h3>
+                                        <p class="text-indigo-600 text-sm"><?= IS_WINDOWS ? '🪟 Windows' : '🐧 Linux' ?></p>
+                                        <p class="text-gray-600 text-xs">PHP <?= PHP_VERSION ?></p>
+                                        <p class="text-gray-600 text-xs"><?= php_uname('s') ?> <?= php_uname('r') ?></p>
+                                    </div>
+                                    
                                     <div class="bg-blue-50 p-4 rounded-lg">
                                         <h3 class="text-sm font-semibold text-blue-800 mb-2">📊 Connection Status</h3>
                                         <?php if (!empty($databases)): ?>
@@ -711,7 +885,7 @@ if (is_dir($currentPath)) {
                                     <div class="bg-purple-50 p-4 rounded-lg">
                                         <h3 class="text-sm font-semibold text-purple-800 mb-2">⚡ Quick Actions</h3>
                                         <div class="space-y-1">
-                                            <button onclick="showSystemInfo()" class="text-purple-600 text-xs hover:underline block">System Info</button>
+                                            <button onclick="showSystemInfo()" class="text-purple-600 text-xs hover:underline block">Detailed Info</button>
                                             <button onclick="clearResults()" class="text-purple-600 text-xs hover:underline block">Clear Results</button>
                                         </div>
                                     </div>
@@ -1159,13 +1333,62 @@ if (is_dir($currentPath)) {
 
         // System and utility functions
         function showSystemInfo() {
-            document.getElementById('sqlQuery').value = `
+            const isLinux = <?= IS_LINUX ? 'true' : 'false' ?>;
+            const phpVersion = '<?= PHP_VERSION ?>';
+            const systemName = '<?= php_uname('s') ?>';
+            const systemRelease = '<?= php_uname('r') ?>';
+            const systemVersion = '<?= php_uname('v') ?>';
+            const machineName = '<?= php_uname('n') ?>';
+            const architecture = '<?= php_uname('m') ?>';
+            
+            const systemInfo = `
+-- ================================================
+-- 🖥️  SecureFileHub System Information
+-- ================================================
+
+-- 💻 Platform Details
+-- Operating System: ${systemName} ${systemRelease}
+-- Architecture: ${architecture}
+-- Machine Name: ${machineName}
+-- PHP Version: ${phpVersion}
+-- Platform Type: ${isLinux ? 'Linux/Unix' : 'Windows'}
+
+-- 🗄️ MySQL System Information
 SELECT 
+    '=== MySQL Server Information ===' as info_section,
     VERSION() as mysql_version,
+    @@version_comment as mysql_distribution,
     @@datadir as data_directory,
+    @@basedir as base_directory,
     @@max_connections as max_connections,
+    @@max_allowed_packet as max_packet_size,
+    @@innodb_buffer_pool_size as innodb_buffer_pool,
     @@query_cache_size as query_cache_size,
-    @@innodb_buffer_pool_size as innodb_buffer_pool_size;`.trim();
+    @@sql_mode as sql_mode,
+    @@default_storage_engine as default_engine;
+
+-- 📊 Server Status
+-- SELECT 
+--     '=== Server Status ===' as status_section,
+--     VARIABLE_NAME as setting_name,
+--     VARIABLE_VALUE as setting_value
+-- FROM INFORMATION_SCHEMA.GLOBAL_STATUS 
+-- WHERE VARIABLE_NAME IN (
+--     'Uptime', 'Connections', 'Queries', 'Threads_connected',
+--     'Innodb_buffer_pool_pages_total', 'Innodb_buffer_pool_pages_free'
+-- );
+
+-- 🔍 Database Information
+-- SELECT 
+--     '=== Database Summary ===' as db_section,
+--     SCHEMA_NAME as database_name,
+--     DEFAULT_CHARACTER_SET_NAME as charset,
+--     DEFAULT_COLLATION_NAME as collation
+-- FROM INFORMATION_SCHEMA.SCHEMATA
+-- WHERE SCHEMA_NAME NOT IN ('information_schema', 'performance_schema', 'mysql', 'sys');
+            `.trim();
+            
+            document.getElementById('sqlQuery').value = systemInfo;
         }
 
         function clearResults() {

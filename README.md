@@ -1,14 +1,57 @@
 # 🗂️ SecureFileHub
 
-[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue.svg)](https://php.net)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/jerickalmeda/SecureFileHub)
+[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue.svg)](https:## 📦 Requirements
+
+- **PHP 7.4 or higher** (Recommended: PHP 8.0+)
+- **Web server** (Apache, Nginx, or IIS)
+- **MySQL/MariaDB** (optional, for database features)
+- **Modern web browser** with JavaScript enabled
+
+### 🐧 Linux Compatibility
+- **Ubuntu** 18.04+ (Apache2, Nginx)
+- **CentOS/RHEL** 7+ (Apache, Nginx)
+- **Debian** 9+ (Apache2, Nginx)
+- **Fedora** 30+ (Apache, Nginx)
+- **Amazon Linux** 2 (Apache, Nginx)
+- **Alpine Linux** (Nginx, Lighttpd)
+
+### 🚪 Windows Compatibility
+- **Windows Server** 2016, 2019, 2022 (IIS)
+- **Windows 10/11** (XAMPP, Laragon, WAMP)
+- **IIS 8.5+** with PHP supportnet)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://ope**Example to set custom root:**
+```php
+// Windows
+define('FM_ROOT_PATH', 'C:\\inetpub\\wwwroot\\myfiles');
+
+// Linux
+define('FM_ROOT_PATH', '/var/www/html/files');
+define('FM_ROOT_PATH', '/home/user/documents');
+```
+
+### 🔒 Linux-Specific Features
+
+#### Unix Socket Connection (Linux)
+For better performance on Linux, you can use Unix sockets:
+
+```php
+// Enable Unix socket connection
+define('DB_SOCKET', '/var/run/mysqld/mysqld.sock');
+// Comment out or remove DB_HOST when using socket
+```
+
+#### File Permissions Display
+On Linux systems, SecureFileHub displays:
+- **Octal permissions** (755, 644, etc.)
+- **Read/Write/Execute** flags
+- **Owner and Group** information
+- **Detailed permission breakdown**rce.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/issues)
 
-> **Cross-Platform Secure PHP File Manager with Database Integration**
+> **Cross-Platform PHP File Manager with Database Integration**
 
-A comprehensive, single-file PHP web application that functions as a secure online file manager with integrated MySQL database management capabilities. **Fully compatible with Windows Server, Linux distributions, and macOS environments.**
+A comprehensive, single-file PHP web application that functions as a secure online file manager with integrated MySQL database management capabilities. **Fully compatible with both Windows Server and Linux distributions** including Ubuntu, CentOS, Debian, and more.
 
 ## 🚀 Quick Demo
 
@@ -20,7 +63,8 @@ A comprehensive, single-file PHP web application that functions as a secure onli
 - 🗄️ **Database Management** - Full MySQL administration capabilities
 - 🛡️ **Enterprise Security** - CSRF protection, session management, path sanitization
 - 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
-- 🌍 **Cross-Platform** - Windows, Linux, macOS, Docker ready
+- 🌐 **Cross-Platform** - Windows Server, Linux distributions, macOS support
+- 🔒 **Unix Permissions** - Full Linux file permission display and management
 
 ## ✨ Features
 
@@ -98,19 +142,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📋 Requirements
 
-- **PHP 7.4 or higher** (Recommended: PHP 8.0+)
-- **Web server** (Apache, Nginx, IIS, or Lighttpd)
-- **Operating System**: Windows, Linux, macOS, or Docker
+- **PHP 7.4 or higher**
+- **Web server** (Apache, Nginx, or IIS)
 - **MySQL/MariaDB** (optional, for database features)
 - **Modern web browser** with JavaScript enabled
-
-### 🐧 Linux Distributions Tested
-- Ubuntu 20.04+ / Debian 10+
-- CentOS 7+ / RHEL 8+
-- Fedora 30+
-- openSUSE Leap 15+
-- Arch Linux / Manjaro
-- Alpine Linux (Docker)
 
 ## 🚀 Quick Installation
 
@@ -130,57 +165,32 @@ cp filemanager.php /path/to/your/webserver/
 3. Access via web browser: `http://yourserver/filemanager.php`
 4. Login with default credentials (see Configuration section)
 
-### Method 3: Windows (Laragon/XAMPP)
+### Method 3: Linux Server Setup
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install apache2 php php-mysql mysql-server
+
+# CentOS/RHEL
+sudo yum install httpd php php-mysqlnd mariadb-server
+# or for newer versions:
+sudo dnf install httpd php php-mysqlnd mariadb-server
+
+# Download SecureFileHub
+wget https://github.com/jerickalmeda/SecureFileHub/releases/latest/download/filemanager.php
+sudo mv filemanager.php /var/www/html/
+
+# Set proper permissions
+sudo chown www-data:www-data /var/www/html/filemanager.php
+sudo chmod 644 /var/www/html/filemanager.php
+
+# Access: http://your-server-ip/filemanager.php
+```
+
+### Method 4: Laragon/XAMPP Setup
 1. Clone or download to your web root (e.g., `C:\laragon\www\SecureFileHub\`)
 2. Start your web server and MySQL (if using database features)
 3. Access: `http://localhost/SecureFileHub/filemanager.php`
-
-### Method 4: Linux (Apache/Nginx)
-
-#### Ubuntu/Debian
-```bash
-# Install prerequisites
-sudo apt update
-sudo apt install apache2 php php-mysql mysql-server git
-
-# Clone SecureFileHub
-sudo git clone https://github.com/jerickalmeda/SecureFileHub.git /var/www/html/SecureFileHub
-sudo chown -R www-data:www-data /var/www/html/SecureFileHub
-sudo chmod 755 /var/www/html/SecureFileHub/filemanager.php
-
-# Access: http://localhost/SecureFileHub/filemanager.php
-```
-
-#### CentOS/RHEL/Fedora
-```bash
-# Install prerequisites
-sudo dnf install httpd php php-mysqlnd mariadb-server git  # Fedora
-# sudo yum install httpd php php-mysqlnd mariadb-server git  # CentOS/RHEL
-
-# Clone SecureFileHub
-sudo git clone https://github.com/jerickalmeda/SecureFileHub.git /var/www/html/SecureFileHub
-sudo chown -R apache:apache /var/www/html/SecureFileHub
-sudo chmod 755 /var/www/html/SecureFileHub/filemanager.php
-
-# Start services
-sudo systemctl start httpd mariadb
-sudo systemctl enable httpd mariadb
-
-# Access: http://localhost/SecureFileHub/filemanager.php
-```
-
-### Method 5: Docker
-```bash
-# Quick Docker deployment
-docker run -d -p 8080:80 -v /host/files:/var/www/html/files \
-  --name securefilehub \
-  php:8.1-apache
-
-# Copy SecureFileHub
-docker cp filemanager.php securefilehub:/var/www/html/
-
-# Access: http://localhost:8080/filemanager.php
-```
 
 ### Default Login Credentials
 - **Username**: `admin`
@@ -246,28 +256,9 @@ By default, the file manager operates in its installation directory. To change t
 define('FM_ROOT_PATH', __DIR__);
 ```
 
-**Windows Examples:**
+**Example to set custom root:**
 ```php
-// Windows Server/IIS
 define('FM_ROOT_PATH', 'C:\inetpub\wwwroot\myfiles');
-
-// Laragon/XAMPP
-define('FM_ROOT_PATH', 'C:\laragon\www\project_files');
-```
-
-**Linux Examples:**
-```php
-// Apache (Ubuntu/Debian)
-define('FM_ROOT_PATH', '/var/www/html/files');
-
-// Nginx
-define('FM_ROOT_PATH', '/usr/share/nginx/html/files');
-
-// Custom directory
-define('FM_ROOT_PATH', '/home/user/documents');
-
-// Docker volume
-define('FM_ROOT_PATH', '/var/www/html/shared');
 ```
 
 ## 🎯 Usage Guide
@@ -329,7 +320,7 @@ define('FM_PASSWORD', 'MyStr0ng!P@ssw0rd#2024');
 
 ### 🌐 Web Server Configuration
 
-#### Apache (.htaccess) - Windows & Linux
+#### Apache (.htaccess) - Linux/Windows
 Create `.htaccess` in the same directory:
 ```apache
 # Restrict access to PHP files
@@ -342,82 +333,45 @@ Create `.htaccess` in the same directory:
 Header always set X-Content-Type-Options nosniff
 Header always set X-Frame-Options DENY
 Header always set X-XSS-Protection "1; mode=block"
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 ```
 
-#### Apache Virtual Host (Linux)
-```apache
-# /etc/apache2/sites-available/securefilehub.conf
-<VirtualHost *:80>
-    ServerName filemanager.local
-    DocumentRoot /var/www/html/SecureFileHub
-    
-    <Directory /var/www/html/SecureFileHub>
-        AllowOverride All
-        Require ip 192.168.1.0/24
-    </Directory>
-    
-    # Security headers
-    Header always set X-Content-Type-Options nosniff
-    Header always set X-Frame-Options DENY
-    Header always set X-XSS-Protection "1; mode=block"
-ErrorLog ${APACHE_LOG_DIR}/securefilehub_error.log
-    CustomLog ${APACHE_LOG_DIR}/securefilehub_access.log combined
-</VirtualHost>
-
-# Enable site
-# sudo a2ensite securefilehub
-# sudo systemctl reload apache2
-```
-
-#### Nginx - Windows & Linux
+#### Nginx - Linux
 ```nginx
 server {
     listen 80;
-    server_name filemanager.local;
-    root /usr/share/nginx/html/SecureFileHub;
-    index filemanager.php;
+    server_name your-domain.com;
+    root /var/www/html;
     
-    # Restrict access
-    allow 192.168.1.0/24;
-    deny all;
-    
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;  # Ubuntu/Debian
-        # fastcgi_pass 127.0.0.1:9000;  # Alternative
-        fastcgi_index filemanager.php;
+    location /filemanager.php {
+        allow 192.168.1.0/24;  # Your IP range
+        deny all;
+        
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options DENY;
+        add_header X-XSS-Protection "1; mode=block";
+        
+        try_files $uri =404;
+        fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;
+        fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
     }
-    
-    # Security headers
-    add_header X-Content-Type-Options nosniff;
-    add_header X-Frame-Options DENY;
-    add_header X-XSS-Protection "1; mode=block";
-    
-    # Logging
-    access_log /var/log/nginx/securefilehub_access.log;
-    error_log /var/log/nginx/securefilehub_error.log;
 }
 ```
 
-#### Lighttpd (Linux)
-```lighttpd
-# /etc/lighttpd/conf-available/15-securefilehub.conf
-$HTTP["host"] == "filemanager.local" {
-    server.document-root = "/var/www/html/SecureFileHub"
-    
-    # IP restriction
-    $HTTP["remoteip"] !~ "^192\.168\.1\." {
-        url.access-deny = ( "" )
-    }
-    
-    # Security headers
-    setenv.add-response-header = (
-        "X-Content-Type-Options" => "nosniff",
-        "X-Frame-Options" => "DENY",
-        "X-XSS-Protection" => "1; mode=block"
-    )
-}
+#### Linux File Permissions
+```bash
+# Secure file permissions
+sudo chown www-data:www-data /var/www/html/filemanager.php
+sudo chmod 644 /var/www/html/filemanager.php
+
+# Secure directory permissions  
+sudo chown www-data:www-data /var/www/html/managed_files
+sudo chmod 755 /var/www/html/managed_files
+
+# For file uploads
+sudo chmod 775 /var/www/html/uploads
 ```
 
 ### 🔐 Database Security
@@ -446,30 +400,9 @@ define('DB_PASSWORD', 'StrongDBPassword123!');
 - Test connection: `mysql -h localhost -u username -p`
 
 #### ❌ "Permission denied" errors
-
-**Windows:**
 - Check file/folder permissions
-- Ensure IIS_IUSRS has appropriate permissions
-- Verify NTFS permissions for web server user
-
-**Linux:**
-```bash
-# Fix file permissions
-sudo chown -R www-data:www-data /var/www/html/SecureFileHub  # Ubuntu/Debian
-sudo chown -R apache:apache /var/www/html/SecureFileHub      # CentOS/RHEL
-sudo chown -R nginx:nginx /var/www/html/SecureFileHub        # Nginx
-
-# Set proper permissions
-sudo chmod 755 /var/www/html/SecureFileHub
-sudo chmod 644 /var/www/html/SecureFileHub/filemanager.php
-
-# For file upload directory
-sudo chmod 775 /var/www/html/SecureFileHub/uploads
-
-# SELinux (if enabled)
-sudo setsebool -P httpd_can_network_connect 1
-sudo setsebool -P httpd_enable_homedirs 1
-```
+- On Windows: Ensure IIS_IUSRS has appropriate permissions
+- On Linux: Use `chmod 755` for directories, `chmod 644` for files
 
 #### ❌ "File upload failed"
 - Check `upload_max_filesize` in php.ini
@@ -484,48 +417,13 @@ sudo setsebool -P httpd_enable_homedirs 1
 
 ### PHP Configuration
 
-**Windows (php.ini location):**
-- XAMPP: `C:\xampp\php\php.ini`
-- Laragon: `C:\laragon\bin\php\php-x.x.x\php.ini`
-- IIS: Usually in PHP installation directory
-
-**Linux (php.ini location):**
-```bash
-# Find php.ini location
-php --ini
-
-# Common locations:
-# Ubuntu/Debian: /etc/php/8.1/apache2/php.ini
-# CentOS/RHEL: /etc/php.ini
-# Fedora: /etc/php.ini
-```
-
-**Recommended php.ini settings:**
+Recommended php.ini settings:
 ```ini
 upload_max_filesize = 100M
 post_max_size = 100M
 max_execution_time = 300
 memory_limit = 256M
 session.gc_maxlifetime = 3600
-
-# Linux-specific security (optional)
-open_basedir = /var/www/html:/tmp
-disable_functions = exec,shell_exec,system,passthru,proc_open,popen
-```
-
-**Restart web server after changes:**
-```bash
-# Ubuntu/Debian
-sudo systemctl restart apache2
-sudo systemctl restart nginx
-
-# CentOS/RHEL/Fedora
-sudo systemctl restart httpd
-sudo systemctl restart nginx
-
-# Manual PHP-FPM restart
-sudo systemctl restart php8.1-fpm  # Ubuntu/Debian
-sudo systemctl restart php-fpm     # CentOS/RHEL
 ```
 
 ## 🎨 Customization
