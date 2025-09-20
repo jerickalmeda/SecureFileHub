@@ -2,8 +2,8 @@
 
 [![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue.svg)](https://php.net)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/SecureFileHub.svg)](https://github.com/yourusername/SecureFileHub/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/yourusername/SecureFileHub.svg)](https://github.com/yourusername/SecureFileHub/issues)
+[![GitHub stars](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/issues)
 
 > **Secure PHP File Manager with Database Integration**
 
@@ -24,17 +24,17 @@ A comprehensive, single-file PHP web application that functions as a secure onli
 
 ### 📁 File Manage## 📦 Repository
 
-**GitHub**: [SecureFileHub](https://github.com/yourusername/SecureFileHub)
+**GitHub**: [SecureFileHub](https://github.com/jerickalmeda/SecureFileHub)
 
 **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/SecureFileHub.git
+git clone https://github.com/jerickalmeda/SecureFileHub.git
 cd SecureFileHub
 ```
 
 **Download latest release:**
 ```bash
-wget https://github.com/yourusername/SecureFileHub/releases/latest/download/filemanager.php
+wget https://github.com/jerickalmeda/SecureFileHub/releases/latest/download/filemanager.php
 ```
 
 **Topics**: `php` `file-manager` `database-manager` `monaco-editor` `mysql` `web-application` `security` `single-file` `windows-server` `laragon`
@@ -52,7 +52,7 @@ Contributions are welcome! Here's how you can help:
 ### Development Setup
 ```bash
 # Clone your fork
-git clone https://github.com/yourusername/SecureFileHub.git
+git clone https://github.com/jerickalmeda/SecureFileHub.git
 cd SecureFileHub
 
 # Set up development environment
@@ -63,7 +63,7 @@ cd SecureFileHub
 ```
 
 ### Reporting Issues
-Found a bug or have a feature request? Please [open an issue](https://github.com/yourusername/SecureFileHub/issues) with:
+Found a bug or have a feature request? Please [open an issue](https://github.com/jerickalmeda/SecureFileHub/issues) with:
 - Detailed description
 - Steps to reproduce (for bugs)
 - Your environment (PHP version, OS, browser)
@@ -106,7 +106,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Method 1: GitHub Download
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/SecureFileHub.git
+git clone https://github.com/jerickalmeda/SecureFileHub.git
 cd SecureFileHub
 
 # Copy to your web server
@@ -114,7 +114,7 @@ cp filemanager.php /path/to/your/webserver/
 ```
 
 ### Method 2: Direct Download
-1. Download `filemanager.php` from [Releases](https://github.com/yourusername/SecureFileHub/releases)
+1. Download `filemanager.php` from [Releases](https://github.com/jerickalmeda/SecureFileHub/releases)
 2. Upload to your web server directory
 3. Access via web browser: `http://yourserver/filemanager.php`
 4. Login with default credentials (see Configuration section)
@@ -441,12 +441,12 @@ When reporting issues, please include:
 
 *Secure File & Database Management Made Simple*
 
-[![GitHub](https://img.shields.io/github/stars/yourusername/SecureFileHub?style=social)](https://github.com/yourusername/SecureFileHub)
-[![Twitter Follow](https://img.shields.io/twitter/follow/yourusername?style=social)](https://twitter.com/yourusername)
+[![GitHub](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub?style=social)](https://github.com/jerickalmeda/SecureFileHub)
+[![Twitter Follow](https://img.shields.io/twitter/follow/jerickalmeda?style=social)](https://twitter.com/jerickalmeda)
 
 **⭐ Star this project if you find it useful!**
 
-[Report Bug](https://github.com/yourusername/SecureFileHub/issues) • [Request Feature](https://github.com/yourusername/SecureFileHub/issues) • [Documentation](https://github.com/yourusername/SecureFileHub/wiki)
+[Report Bug](https://github.com/jerickalmeda/SecureFileHub/issues) • [Request Feature](https://github.com/jerickalmeda/SecureFileHub/issues) • [Documentation](https://github.com/jerickalmeda/SecureFileHub/wiki)
 
 </div>
 
