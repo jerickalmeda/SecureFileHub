@@ -1,6 +1,62 @@
 # 🗂️ SecureFileHub
 
-[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue.svg)](https:## 📦 Requirements
+[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-blue.svg)](https://www.php.net)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/issues)
+[![Version](https://img.shields.io/badge/Version-1.1-green.svg)](https://github.com/jerickalmeda/SecureFileHub/releases)
+> **Cross-Platform PHP File Manager with Database Integration**
+
+A comprehensive, single-file PHP web application that functions as a secure online file manager with integrated MySQL database management capabilities. **Fully compatible with both Windows Server and Linux distributions** including Ubuntu, CentOS, Debian, Fedora, and more.
+
+## 🚀 Quick Demo
+
+![SecureFileHub Demo](https://via.placeholder.com/800x400/2563eb/ffffff?text=SecureFileHub+v1.1+Demo)
+
+**Key Highlights:**
+- 🔐 **Single File Deployment** - Just upload one PHP file and you're ready!
+- 🎨 **Monaco Editor Integration** - Professional code editing with VS Code features
+- 🗄️ **Database Management** - Full MySQL administration capabilities
+- 🛡️ **Enterprise Security** - CSRF protection, session management, path sanitization
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
+- 🌐 **Cross-Platform** - Windows Server, Linux distributions, Docker support
+- 🔒 **Unix Permissions** - Full Linux file permission display and management
+
+## ✨ Features
+
+### 📁 File Management
+- **Web Authentication** - Login protection with session management
+- **File Operations** - Upload, download, create, edit, rename, and delete files/folders
+- **Code Editor** - Built-in Monaco Editor (VS Code editor) with syntax highlighting
+- **Tree Navigation** - Sidebar directory tree structure for easy navigation
+- **File Previews** - Support for text files, images, and code files
+- **Security** - CSRF protection, directory traversal prevention, path sanitization
+
+### 🗄️ Database Management
+- **MySQL Integration** - Connect and manage MySQL databases with Unix socket support
+- **Query Executor** - Execute SQL queries with results display
+- **Table Browser** - Browse table structures and data
+- **Export Features** - Export query results to CSV/JSON
+- **Query History** - Track and reuse recent queries
+- **Database Tree** - Navigate databases and tables in sidebar
+
+### 🔒 Security Features
+- Session-based authentication with timeout
+- CSRF token protection for all forms
+- Path sanitization and directory traversal prevention
+- Configurable access credentials
+- File type restrictions for editing
+- Secure database connections with PDO
+- Cross-platform permission checking
+
+### 🌐 Cross-Platform Support
+- **Windows Server** 2016, 2019, 2022 (IIS)
+- **Linux Distributions** - Ubuntu, CentOS, Debian, Fedora, Amazon Linux, Alpine
+- **POSIX Permissions** - Full Linux file permission display and management
+- **Unix Sockets** - Optimized MySQL connections on Linux
+- **Platform Detection** - Automatic Windows/Linux feature adaptation
+
+## 📦 Requirements
 
 - **PHP 7.4 or higher** (Recommended: PHP 8.0+)
 - **Web server** (Apache, Nginx, or IIS)
@@ -15,141 +71,48 @@
 - **Amazon Linux** 2 (Apache, Nginx)
 - **Alpine Linux** (Nginx, Lighttpd)
 
-### 🚪 Windows Compatibility
+### 🪟 Windows Compatibility
 - **Windows Server** 2016, 2019, 2022 (IIS)
 - **Windows 10/11** (XAMPP, Laragon, WAMP)
-- **IIS 8.5+** with PHP supportnet)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://ope**Example to set custom root:**
-```php
-// Windows
-define('FM_ROOT_PATH', 'C:\\inetpub\\wwwroot\\myfiles');
-
-// Linux
-define('FM_ROOT_PATH', '/var/www/html/files');
-define('FM_ROOT_PATH', '/home/user/documents');
-```
-
-### 🔒 Linux-Specific Features
-
-#### Unix Socket Connection (Linux)
-For better performance on Linux, you can use Unix sockets:
-
-```php
-// Enable Unix socket connection
-define('DB_SOCKET', '/var/run/mysqld/mysqld.sock');
-// Comment out or remove DB_HOST when using socket
-```
-
-#### File Permissions Display
-On Linux systems, SecureFileHub displays:
-- **Octal permissions** (755, 644, etc.)
-- **Read/Write/Execute** flags
-- **Owner and Group** information
-- **Detailed permission breakdown**rce.org/licenses/MIT)
-[![GitHub stars](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/issues)
-
-> **Cross-Platform PHP File Manager with Database Integration**
-
-A comprehensive, single-file PHP web application that functions as a secure online file manager with integrated MySQL database management capabilities. **Fully compatible with both Windows Server and Linux distributions** including Ubuntu, CentOS, Debian, and more.
-
-## 🚀 Quick Demo
-
-![SecureFileHub Demo](https://via.placeholder.com/800x400/2563eb/ffffff?text=SecureFileHub+Demo)
-
-**Key Highlights:**
-- 🔐 **Single File Deployment** - Just upload one PHP file and you're ready!
-- 🎨 **Monaco Editor Integration** - Professional code editing with VS Code features
-- 🗄️ **Database Management** - Full MySQL administration capabilities
-- 🛡️ **Enterprise Security** - CSRF protection, session management, path sanitization
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
-- 🌐 **Cross-Platform** - Windows Server, Linux distributions, macOS support
-- 🔒 **Unix Permissions** - Full Linux file permission display and management
-
-## ✨ Features
-
-### 📁 File Manage## 📦 Repository
-
-**GitHub**: [SecureFileHub](https://github.com/jerickalmeda/SecureFileHub)
-
-**Clone the repository:**
-```bash
-git clone https://github.com/jerickalmeda/SecureFileHub.git
-cd SecureFileHub
-```
-
-**Download latest release:**
-```bash
-wget https://github.com/jerickalmeda/SecureFileHub/releases/latest/download/filemanager.php
-```
-
-**Topics**: `php` `file-manager` `database-manager` `monaco-editor` `mysql` `web-application` `security` `single-file` `windows-server` `laragon`
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit your changes**: `git commit -m 'Add amazing feature'`
-4. **Push to the branch**: `git push origin feature/amazing-feature`
-5. **Open a Pull Request**
-
-### Development Setup
-```bash
-# Clone your fork
-git clone https://github.com/jerickalmeda/SecureFileHub.git
-cd SecureFileHub
-
-# Set up development environment
-# (Laragon, XAMPP, or your preferred local server)
-
-# Make your changes and test
-# Submit a pull request
-```
-
-### Reporting Issues
-Found a bug or have a feature request? Please [open an issue](https://github.com/jerickalmeda/SecureFileHub/issues) with:
-- Detailed description
-- Steps to reproduce (for bugs)
-- Your environment (PHP version, OS, browser)
-- Screenshots (if applicable)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.e Authentication** - Login protection with session management
-- **File Operations** - Upload, download, create, edit, rename, and delete files/folders
-- **Code Editor** - Built-in Monaco Editor (VS Code editor) with syntax highlighting
-- **Tree Navigation** - Sidebar directory tree structure for easy navigation
-- **File Previews** - Support for text files, images, and code files
-- **Security** - CSRF protection, directory traversal prevention, path sanitization
-
-### 🗄️ Database Management
-- **MySQL Integration** - Connect and manage MySQL databases
-- **Query Executor** - Execute SQL queries with results display
-- **Table Browser** - Browse table structures and data
-- **Export Features** - Export query results to CSV/JSON
-- **Query History** - Track and reuse recent queries
-- **Database Tree** - Navigate databases and tables in sidebar
-
-### 🔒 Security Features
-- Session-based authentication with timeout
-- CSRF token protection
-- Path sanitization and directory traversal prevention
-- Configurable access credentials
-- File type restrictions for editing
-- Secure database connections with PDO
-
-## 📋 Requirements
-
-- **PHP 7.4 or higher**
-- **Web server** (Apache, Nginx, or IIS)
-- **MySQL/MariaDB** (optional, for database features)
-- **Modern web browser** with JavaScript enabled
-
+- **IIS 8.5+** with PHP support
 ## 🚀 Quick Installation
 
-### Method 1: GitHub Download
+### 🐧 Linux Auto-Installation (Recommended)
+Download and run our automated installation script:
+
+```bash
+# Download the installation script
+curl -L -o install-linux.sh https://raw.githubusercontent.com/jerickalmeda/SecureFileHub/main/install-linux.sh
+
+# Make it executable
+chmod +x install-linux.sh
+
+# Run the installer (supports Ubuntu, Debian, CentOS, Fedora, Amazon Linux)
+./install-linux.sh
+```
+
+The script will automatically:
+- Install Apache, PHP, and MySQL
+- Download SecureFileHub
+- Set proper permissions
+- Configure the web server
+
+### 🪟 Windows Manual Installation
+
+#### Method 1: IIS Setup
+1. Download `filemanager.php` from [Releases](https://github.com/jerickalmeda/SecureFileHub/releases)
+2. Copy to your IIS web directory (e.g., `C:\inetpub\wwwroot\`)
+3. Ensure PHP is configured in IIS
+4. Access via: `http://localhost/filemanager.php`
+
+#### Method 2: Laragon/XAMPP Setup
+1. Clone or download to your web root (e.g., `C:\laragon\www\SecureFileHub\`)
+2. Start your web server and MySQL
+3. Access: `http://localhost/SecureFileHub/filemanager.php`
+
+### � Direct Download Methods
+
+#### GitHub Download
 ```bash
 # Clone the repository
 git clone https://github.com/jerickalmeda/SecureFileHub.git
@@ -159,40 +122,18 @@ cd SecureFileHub
 cp filemanager.php /path/to/your/webserver/
 ```
 
-### Method 2: Direct Download
-1. Download `filemanager.php` from [Releases](https://github.com/jerickalmeda/SecureFileHub/releases)
-2. Upload to your web server directory
-3. Access via web browser: `http://yourserver/filemanager.php`
-4. Login with default credentials (see Configuration section)
-
-### Method 3: Linux Server Setup
+#### Release Download
 ```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install apache2 php php-mysql mysql-server
-
-# CentOS/RHEL
-sudo yum install httpd php php-mysqlnd mariadb-server
-# or for newer versions:
-sudo dnf install httpd php php-mysqlnd mariadb-server
-
-# Download SecureFileHub
+# Download latest version
 wget https://github.com/jerickalmeda/SecureFileHub/releases/latest/download/filemanager.php
-sudo mv filemanager.php /var/www/html/
 
-# Set proper permissions
+# Move to web directory
+sudo mv filemanager.php /var/www/html/
 sudo chown www-data:www-data /var/www/html/filemanager.php
 sudo chmod 644 /var/www/html/filemanager.php
-
-# Access: http://your-server-ip/filemanager.php
 ```
 
-### Method 4: Laragon/XAMPP Setup
-1. Clone or download to your web root (e.g., `C:\laragon\www\SecureFileHub\`)
-2. Start your web server and MySQL (if using database features)
-3. Access: `http://localhost/SecureFileHub/filemanager.php`
-
-### Default Login Credentials
+### 🔑 Default Login Credentials
 - **Username**: `admin`
 - **Password**: `filemanager123`
 - ⚠️ **Important**: Change these credentials immediately after installation!
@@ -256,10 +197,41 @@ By default, the file manager operates in its installation directory. To change t
 define('FM_ROOT_PATH', __DIR__);
 ```
 
-**Example to set custom root:**
+### 📂 Root Directory Configuration
+
+By default, the file manager operates in its installation directory. To change the root directory, modify line 8:
+
 ```php
-define('FM_ROOT_PATH', 'C:\inetpub\wwwroot\myfiles');
+define('FM_ROOT_PATH', __DIR__);
 ```
+
+**Examples:**
+```php
+// Windows
+define('FM_ROOT_PATH', 'C:\\inetpub\\wwwroot\\myfiles');
+
+// Linux
+define('FM_ROOT_PATH', '/var/www/html/files');
+define('FM_ROOT_PATH', '/home/user/documents');
+```
+
+### 🔒 Linux-Specific Features
+
+#### Unix Socket Connection (Linux)
+For better performance on Linux, you can use Unix sockets:
+
+```php
+// Enable Unix socket connection
+define('DB_SOCKET', '/var/run/mysqld/mysqld.sock');
+// Comment out or remove DB_HOST when using socket
+```
+
+#### File Permissions Display
+On Linux systems, SecureFileHub displays:
+- **Octal permissions** (755, 644, etc.)
+- **Read/Write/Execute** flags
+- **Owner and Group** information
+- **Detailed permission breakdown**
 
 ## 🎯 Usage Guide
 
@@ -495,58 +467,104 @@ Add custom SQL quick queries:
 3. Restore your configuration settings
 4. Test functionality
 
-## � Repository
+## 📦 Repository & Download
 
-**GitHub**: [SecureFileHub](https://github.com/yourusername/SecureFileHub)
+**GitHub Repository**: [SecureFileHub](https://github.com/jerickalmeda/SecureFileHub)
 
 **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/SecureFileHub.git
+git clone https://github.com/jerickalmeda/SecureFileHub.git
 cd SecureFileHub
 ```
 
-**Topics**: `php` `file-manager` `database-manager` `monaco-editor` `mysql` `web-application` `security` `single-file` `windows-server` `laragon`
+**Download latest release:**
+```bash
+wget https://github.com/jerickalmeda/SecureFileHub/releases/latest/download/filemanager.php
+```
 
-## �📄 License
+**Topics**: `file-manager`, `web-file-manager`, `php-file-manager`, `online-file-manager`, `file-browser`, `php`, `mysql`, `javascript`, `tailwindcss`, `monaco-editor`, `pdo`, `cross-platform`, `windows-server`, `linux`, `ubuntu`, `centos`, `debian`, `database-manager`, `code-editor`, `file-upload`, `authentication`, `security`, `csrf-protection`, `single-file`, `portable`, `self-hosted`, `apache`, `nginx`, `iis`, `admin-tools`
 
-This project is open source under the MIT License. Feel free to modify and distribute according to your needs.
+## 🤝 Contributing
 
-## 🆘 Support
+Contributions are welcome! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Commit your changes**: `git commit -m 'Add amazing feature'`
+4. **Push to the branch**: `git push origin feature/amazing-feature`
+5. **Open a Pull Request**
+
+### Development Setup
+```bash
+# Clone your fork
+git clone https://github.com/yourusername/SecureFileHub.git
+cd SecureFileHub
+
+# Set up development environment
+# (Laragon, XAMPP, or your preferred local server)
+
+# Make your changes and test
+# Submit a pull request
+```
+
+### Reporting Issues
+Found a bug or have a feature request? Please [open an issue](https://github.com/jerickalmeda/SecureFileHub/issues) with:
+- Detailed description
+- Steps to reproduce (for bugs)
+- Your environment (PHP version, OS, browser)
+- Screenshots (if applicable)
+
+## 🆘 Support & Getting Help
 
 ### Getting Help
 1. Check the troubleshooting section above
-2. Verify your PHP and MySQL versions
-3. Check web server error logs
+2. Verify your PHP and MySQL versions meet requirements
+3. Check web server error logs for detailed error messages
 4. Test with default configuration first
+5. Try the automated Linux installation script
 
 ### Reporting Issues
 When reporting issues, please include:
-- PHP version
-- Web server type and version
-- MySQL version (if using database features)
-- Browser and version
-- Complete error messages
-- Steps to reproduce
+- **PHP version** (`php -v`)
+- **Web server** type and version (Apache, Nginx, IIS)
+- **MySQL version** (if using database features)
+- **Operating System** (Windows Server, Ubuntu, CentOS, etc.)
+- **Browser** and version
+- **Complete error messages** from logs
+- **Steps to reproduce** the issue
+- **Screenshots** (if applicable)
+
+### Feature Requests
+We welcome feature requests! Please [open an issue](https://github.com/jerickalmeda/SecureFileHub/issues) with:
+- Clear description of the requested feature
+- Use case and benefits
+- Any implementation suggestions
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 <div align="center">
 
-**🗂️ SecureFileHub**
+**🗂️ SecureFileHub v1.1**
 
-*Secure File & Database Management Made Simple*
+*Cross-Platform File & Database Management Made Simple*
 
 [![GitHub](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub?style=social)](https://github.com/jerickalmeda/SecureFileHub)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jerickalmeda?style=social)](https://twitter.com/jerickalmeda)
 
 **⭐ Star this project if you find it useful!**
 
-[Report Bug](https://github.com/jerickalmeda/SecureFileHub/issues) • [Request Feature](https://github.com/jerickalmeda/SecureFileHub/issues) • [Documentation](https://github.com/jerickalmeda/SecureFileHub/wiki)
+[Report Bug](https://github.com/jerickalmeda/SecureFileHub/issues) • [Request Feature](https://github.com/jerickalmeda/SecureFileHub/issues) • [Documentation](https://github.com/jerickalmeda/SecureFileHub/wiki) • [Download v1.1](https://github.com/jerickalmeda/SecureFileHub/releases/tag/v1.1)
 
 </div>
 
 ---
 
 **Made with ❤️ by the SecureFileHub team**
+
+*Supporting both Windows Server and Linux environments with enterprise-grade security*
 
 Last updated: September 2025
