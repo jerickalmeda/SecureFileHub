@@ -1906,12 +1906,23 @@ SELECT
             });
 
             function formatCode() {
-                if (editor) {
-                    editor.getAction('editor.action.formatDocument').run();
+                if (window.editor) {
+                    try {
+                        window.editor.getAction('editor.action.formatDocument').run();
+                    } catch (e) {
+                        console.error('Format error:', e);
+                        alert('Format failed. Make sure the file type supports formatting.');
+                    }
+                } else {
+                    console.error('Editor not initialized');
+                    alert('Editor not ready. Please wait a moment and try again.');
                 }
             }
 
             function saveEditorFile() {
+                if (window.editor) {
+                    document.getElementById('content').value = window.editor.getValue();
+                }
                 document.getElementById('editorForm').submit();
             }
 
