@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 // Cross-platform compatibility detection
@@ -191,6 +191,15 @@ function buildDirectoryTree($path, $basePath = '') {
                 'permissions' => $itemPermissions,
                 'children' => $itemPermissions['readable'] ? buildDirectoryTree($itemPath, $relativePath) : []
             ];
+        } else {
+            // Add files to the tree
+            $tree[] = [
+                'name' => $item,
+                'path' => str_replace('\\', '/', $relativePath),
+                'type' => 'file',
+                'size' => filesize($itemPath),
+                'icon' => getFileIcon($item)
+            ];
         }
     }
     
@@ -316,36 +325,36 @@ function getFileIcon($filename) {
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     
     $icons = [
-        'php' => '🐘',
-        'html' => '🌐',
-        'css' => '🎨',
-        'js' => '⚡',
-        'json' => '📋',
-        'xml' => '📄',
-        'txt' => '📝',
-        'md' => '📖',
-        'pdf' => '📕',
-        'doc' => '📘',
-        'docx' => '📘',
-        'xls' => '📗',
-        'xlsx' => '📗',
-        'ppt' => '📙',
-        'pptx' => '📙',
-        'zip' => '📦',
-        'rar' => '📦',
-        'jpg' => '🖼️',
-        'jpeg' => '🖼️',
-        'png' => '🖼️',
-        'gif' => '🖼️',
-        'svg' => '🖼️',
-        'mp3' => '🎵',
-        'mp4' => '🎬',
-        'avi' => '🎬',
-        'exe' => '⚙️',
-        'dll' => '⚙️',
+        'php' => 'ðŸ˜',
+        'html' => 'ðŸŒ',
+        'css' => 'ðŸŽ¨',
+        'js' => 'âš¡',
+        'json' => 'ðŸ“‹',
+        'xml' => 'ðŸ“„',
+        'txt' => 'ðŸ“',
+        'md' => 'ðŸ“–',
+        'pdf' => 'ðŸ“•',
+        'doc' => 'ðŸ“˜',
+        'docx' => 'ðŸ“˜',
+        'xls' => 'ðŸ“—',
+        'xlsx' => 'ðŸ“—',
+        'ppt' => 'ðŸ“™',
+        'pptx' => 'ðŸ“™',
+        'zip' => 'ðŸ“¦',
+        'rar' => 'ðŸ“¦',
+        'jpg' => 'ðŸ–¼ï¸',
+        'jpeg' => 'ðŸ–¼ï¸',
+        'png' => 'ðŸ–¼ï¸',
+        'gif' => 'ðŸ–¼ï¸',
+        'svg' => 'ðŸ–¼ï¸',
+        'mp3' => 'ðŸŽµ',
+        'mp4' => 'ðŸŽ¬',
+        'avi' => 'ðŸŽ¬',
+        'exe' => 'âš™ï¸',
+        'dll' => 'âš™ï¸',
     ];
     
-    return isset($icons[$ext]) ? $icons[$ext] : '📄';
+    return isset($icons[$ext]) ? $icons[$ext] : 'ðŸ“„';
 }
 
 // Check if file is editable
@@ -508,7 +517,7 @@ if (!isAuthenticated()) {
     </head>
     <body class="bg-gray-100 min-h-screen flex items-center justify-center">
         <div class="bg-white p-8 rounded-lg shadow-md w-96">
-            <h1 class="text-2xl font-bold text-center mb-6">🔐 File Manager Login</h1>
+            <h1 class="text-2xl font-bold text-center mb-6">ðŸ” File Manager Login</h1>
             
             <?php if (isset($loginError)): ?>
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -586,7 +595,7 @@ if (is_dir($currentPath)) {
             'is_dir' => is_dir($filePath),
             'size' => is_file($filePath) ? filesize($filePath) : 0,
             'modified' => filemtime($filePath),
-            'icon' => is_dir($filePath) ? '📁' : getFileIcon($file),
+            'icon' => is_dir($filePath) ? 'ðŸ“' : getFileIcon($file),
             'editable' => is_file($filePath) && isEditableFile($file),
             'permissions' => $permissions,
             'owner' => $permissions['owner'] ?? 'unknown',
@@ -758,7 +767,7 @@ if (is_dir($currentPath)) {
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold tracking-tight">SecureFileHub</h1>
-                        <p class="text-xs opacity-90">v2.0 • Cross-Platform File Manager</p>
+                        <p class="text-xs opacity-90">v2.0 â€¢ Cross-Platform File Manager</p>
                     </div>
                 </div>
 
@@ -766,7 +775,7 @@ if (is_dir($currentPath)) {
                 <div class="flex-1 mx-8">
                     <div class="bg-white bg-opacity-10 rounded-lg px-4 py-2 backdrop-blur-sm">
                         <div class="flex items-center text-sm">
-                            <span class="opacity-75">📍 Current Path:</span>
+                            <span class="opacity-75">ðŸ“ Current Path:</span>
                             <span class="ml-2 font-medium truncate" title="<?= htmlspecialchars($currentDir) ?>">
                                 <?= htmlspecialchars(substr($currentDir, 0, 60) . (strlen($currentDir) > 60 ? '...' : '')) ?>
                             </span>
@@ -779,7 +788,7 @@ if (is_dir($currentPath)) {
                     <div class="text-right hidden md:block">
                         <div class="text-xs opacity-75">System</div>
                         <div class="text-sm font-semibold">
-                            <?= IS_WINDOWS ? '🪟 Windows' : '🐧 Linux' ?> • PHP <?= PHP_VERSION ?>
+                            <?= IS_WINDOWS ? 'ðŸªŸ Windows' : 'ðŸ§ Linux' ?> â€¢ PHP <?= PHP_VERSION ?>
                         </div>
                     </div>
                     <div class="h-10 w-px bg-white opacity-20"></div>
@@ -789,7 +798,7 @@ if (is_dir($currentPath)) {
                             <div class="text-sm font-semibold"><?= FM_USERNAME ?></div>
                         </div>
                         <a href="?logout" class="bg-red-500 bg-opacity-90 px-4 py-2 rounded-lg text-sm hover:bg-opacity-100 transition-all duration-200 font-medium shadow-lg">
-                            🚪 Logout
+                            ðŸšª Logout
                         </a>
                     </div>
                 </div>
@@ -803,10 +812,10 @@ if (is_dir($currentPath)) {
             <!-- Tabs -->
             <div class="flex border-b">
                 <button onclick="switchSidebarTab('files')" id="filesTab" class="flex-1 py-2 px-4 text-sm font-medium border-b-2 <?= $currentTab === 'files' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' ?>">
-                    📁 Files
+                    ðŸ“ Files
                 </button>
                 <button onclick="switchSidebarTab('database')" id="databaseTab" class="flex-1 py-2 px-4 text-sm font-medium border-b-2 <?= $currentTab === 'database' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' ?>">
-                    🗄️ Database
+                    ðŸ—„ï¸ Database
                 </button>
             </div>
 
@@ -816,10 +825,10 @@ if (is_dir($currentPath)) {
                     <h3 class="text-sm font-semibold text-gray-700">Directory Structure</h3>
                     <div class="flex space-x-1">
                         <button onclick="expandAllFolders()" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200" title="Expand All Folders">
-                            ➕
+                            âž•
                         </button>
                         <button onclick="collapseAllFolders()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200" title="Collapse All Folders">
-                            ➖
+                            âž–
                         </button>
                     </div>
                 </div>
@@ -832,13 +841,13 @@ if (is_dir($currentPath)) {
             <div id="databaseContent" class="p-4 <?= $currentTab !== 'database' ? 'hidden' : '' ?>">
                 <h3 class="text-sm font-semibold text-gray-700 mb-3">MySQL Databases</h3>
                 <?php if (empty($databases)): ?>
-                    <p class="text-gray-500 text-sm">❌ Database connection failed</p>
+                    <p class="text-gray-500 text-sm">âŒ Database connection failed</p>
                 <?php else: ?>
                     <div class="space-y-2">
                         <?php foreach ($databases as $db): ?>
                             <div class="tree-item p-2 rounded text-sm" onclick="toggleDatabase('<?= htmlspecialchars($db) ?>')">
-                                <span class="toggle-icon">▶</span>
-                                <span class="ml-1">🗄️ <?= htmlspecialchars($db) ?></span>
+                                <span class="toggle-icon">â–¶</span>
+                                <span class="ml-1">ðŸ—„ï¸ <?= htmlspecialchars($db) ?></span>
                                 <div class="tree-children" id="db-<?= htmlspecialchars($db) ?>">
                                     <!-- Tables will be loaded here -->
                                 </div>
@@ -870,10 +879,10 @@ if (is_dir($currentPath)) {
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex space-x-8">
                             <a href="?tab=files&dir=<?= urlencode($currentDir) ?>" class="py-2 px-1 border-b-2 font-medium text-sm <?= $currentTab === 'files' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
-                                📁 File Manager
+                                ðŸ“ File Manager
                             </a>
                             <a href="?tab=database&dir=<?= urlencode($currentDir) ?>" class="py-2 px-1 border-b-2 font-medium text-sm <?= $currentTab === 'database' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
-                                🗄️ Database Manager
+                                ðŸ—„ï¸ Database Manager
                             </a>
                         </nav>
                     </div>
@@ -883,14 +892,14 @@ if (is_dir($currentPath)) {
                             <!-- File Manager Content -->
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center space-x-2">
-                                    <span class="text-gray-600">📍</span>
+                                    <span class="text-gray-600">ðŸ“</span>
                                     <span class="font-medium">Current Path:</span>
                                     <span class="text-blue-600"><?= $currentDir ?: '/' ?></span>
                                 </div>
                                 
                                 <?php if ($currentDir): ?>
                                     <a href="?tab=files&dir=<?= urlencode(dirname($currentDir)) ?>" class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600">
-                                        ⬆️ Up
+                                        â¬†ï¸ Up
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -903,7 +912,7 @@ if (is_dir($currentPath)) {
                                     <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
                                     <input type="hidden" name="tab" value="files">
                                     <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                                    <label class="block text-sm font-semibold mb-2 text-blue-700">📤 Upload File</label>
+                                    <label class="block text-sm font-semibold mb-2 text-blue-700">ðŸ“¤ Upload File</label>
                                     <input type="file" name="file" required class="w-full text-xs mb-2 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600 file:cursor-pointer">
                                     <button type="submit" class="w-full bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">Upload</button>
                                 </form>
@@ -914,7 +923,7 @@ if (is_dir($currentPath)) {
                                     <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
                                     <input type="hidden" name="tab" value="files">
                                     <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                                    <label class="block text-sm font-semibold mb-2 text-green-700">📁 Create Folder</label>
+                                    <label class="block text-sm font-semibold mb-2 text-green-700">ðŸ“ Create Folder</label>
                                     <input type="text" name="folder_name" required placeholder="Folder name" class="w-full px-3 py-2 border border-green-300 rounded-lg text-sm mb-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                     <button type="submit" class="w-full bg-green-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">Create</button>
                                 </form>
@@ -925,14 +934,14 @@ if (is_dir($currentPath)) {
                                     <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
                                     <input type="hidden" name="tab" value="files">
                                     <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                                    <label class="block text-sm font-semibold mb-2 text-yellow-700">📝 Create File</label>
+                                    <label class="block text-sm font-semibold mb-2 text-yellow-700">ðŸ“ Create File</label>
                                     <input type="text" name="file_name" required placeholder="file.txt" class="w-full px-3 py-2 border border-yellow-300 rounded-lg text-sm mb-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
                                     <button type="submit" class="w-full bg-yellow-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors shadow-sm">Create</button>
                                 </form>
 
                                 <!-- Actions -->
                                 <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                                    <label class="block text-sm font-semibold mb-2 text-gray-700">🔄 Quick Actions</label>
+                                    <label class="block text-sm font-semibold mb-2 text-gray-700">ðŸ”„ Quick Actions</label>
                                     <a href="?tab=files" class="block w-full bg-gray-600 text-white py-2 px-3 rounded-lg text-sm text-center font-medium hover:bg-gray-700 transition-colors shadow-sm mb-2">Refresh View</a>
                                     <?php if ($editFile): ?>
                                         <button onclick="toggleEditor()" class="w-full bg-purple-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm">Hide Editor</button>
@@ -998,20 +1007,20 @@ if (is_dir($currentPath)) {
                                                     <div class="flex space-x-1">
                                                         <?php if (!$item['is_dir']): ?>
                                                             <a href="?download=<?= urlencode($item['path']) ?>" class="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded text-xs font-medium transition-colors" title="Download File">
-                                                                📥
+                                                                ðŸ“¥
                                                             </a>
                                                             <?php if ($item['editable']): ?>
                                                                 <a href="?edit=<?= urlencode($item['path']) ?>&dir=<?= urlencode($currentDir) ?>&tab=files" class="inline-flex items-center px-2 py-1 bg-green-50 text-green-600 hover:bg-green-100 rounded text-xs font-medium transition-colors" title="Edit File">
-                                                                    ✏️
+                                                                    âœï¸
                                                                 </a>
                                                             <?php endif; ?>
                                                         <?php endif; ?>
                                                         
                                                         <button onclick="renameItem('<?= htmlspecialchars($item['path']) ?>', '<?= htmlspecialchars($item['name']) ?>')" class="inline-flex items-center px-2 py-1 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 rounded text-xs font-medium transition-colors" title="Rename">
-                                                            ✏️
+                                                            âœï¸
                                                         </button>
                                                         <button onclick="deleteItem('<?= htmlspecialchars($item['path']) ?>')" class="inline-flex items-center px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-xs font-medium transition-colors" title="Delete">
-                                                            🗑️
+                                                            ðŸ—‘ï¸
                                                         </button>
                                                     </div>
                                                 </td>
@@ -1021,7 +1030,7 @@ if (is_dir($currentPath)) {
                                         <?php if (empty($items)): ?>
                                             <tr>
                                                 <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                                                    📂 Empty directory
+                                                    ðŸ“‚ Empty directory
                                                 </td>
                                             </tr>
                                         <?php endif; ?>
@@ -1035,30 +1044,30 @@ if (is_dir($currentPath)) {
                                 <!-- System & Database Status Info -->
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div class="bg-indigo-50 p-4 rounded-lg">
-                                        <h3 class="text-sm font-semibold text-indigo-800 mb-2">💻 System Info</h3>
-                                        <p class="text-indigo-600 text-sm"><?= IS_WINDOWS ? '🪟 Windows' : '🐧 Linux' ?></p>
+                                        <h3 class="text-sm font-semibold text-indigo-800 mb-2">ðŸ’» System Info</h3>
+                                        <p class="text-indigo-600 text-sm"><?= IS_WINDOWS ? 'ðŸªŸ Windows' : 'ðŸ§ Linux' ?></p>
                                         <p class="text-gray-600 text-xs">PHP <?= PHP_VERSION ?></p>
                                         <p class="text-gray-600 text-xs"><?= php_uname('s') ?> <?= php_uname('r') ?></p>
                                     </div>
                                     
                                     <div class="bg-blue-50 p-4 rounded-lg">
-                                        <h3 class="text-sm font-semibold text-blue-800 mb-2">📊 Connection Status</h3>
+                                        <h3 class="text-sm font-semibold text-blue-800 mb-2">ðŸ“Š Connection Status</h3>
                                         <?php if (!empty($databases)): ?>
-                                            <p class="text-green-600 text-sm">✅ Connected to MySQL</p>
+                                            <p class="text-green-600 text-sm">âœ… Connected to MySQL</p>
                                             <p class="text-gray-600 text-xs">Host: <?= DB_HOST ?></p>
                                         <?php else: ?>
-                                            <p class="text-red-600 text-sm">❌ Connection Failed</p>
+                                            <p class="text-red-600 text-sm">âŒ Connection Failed</p>
                                         <?php endif; ?>
                                     </div>
                                     
                                     <div class="bg-green-50 p-4 rounded-lg">
-                                        <h3 class="text-sm font-semibold text-green-800 mb-2">🗄️ Databases</h3>
+                                        <h3 class="text-sm font-semibold text-green-800 mb-2">ðŸ—„ï¸ Databases</h3>
                                         <p class="text-green-600 text-lg font-bold"><?= count($databases) ?></p>
                                         <p class="text-gray-600 text-xs">Available databases</p>
                                     </div>
                                     
                                     <div class="bg-purple-50 p-4 rounded-lg">
-                                        <h3 class="text-sm font-semibold text-purple-800 mb-2">⚡ Quick Actions</h3>
+                                        <h3 class="text-sm font-semibold text-purple-800 mb-2">âš¡ Quick Actions</h3>
                                         <div class="space-y-1">
                                             <button onclick="showSystemInfo()" class="text-purple-600 text-xs hover:underline block">Detailed Info</button>
                                             <button onclick="clearResults()" class="text-purple-600 text-xs hover:underline block">Clear Results</button>
@@ -1071,7 +1080,7 @@ if (is_dir($currentPath)) {
                                     <!-- SQL Query Form -->
                                     <div class="bg-white p-4 rounded-lg shadow">
                                         <h3 class="text-lg font-medium mb-4 flex items-center">
-                                            <span class="mr-2">🔍</span> SQL Query Editor
+                                            <span class="mr-2">ðŸ”</span> SQL Query Editor
                                         </h3>
                                         <form method="POST" class="space-y-4">
                                             <input type="hidden" name="action" value="execute_sql">
@@ -1135,10 +1144,10 @@ if (is_dir($currentPath)) {
                                             
                                             <div class="flex space-x-2">
                                                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center">
-                                                    <span class="mr-1">▶️</span> Execute Query
+                                                    <span class="mr-1">â–¶ï¸</span> Execute Query
                                                 </button>
                                                 <button type="button" onclick="explainQuery()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                                                    🔍 Explain
+                                                    ðŸ” Explain
                                                 </button>
                                             </div>
                                         </form>
@@ -1147,7 +1156,7 @@ if (is_dir($currentPath)) {
                                     <!-- Table Structure & Info -->
                                     <div class="bg-white p-4 rounded-lg shadow">
                                         <h3 class="text-lg font-medium mb-4 flex items-center">
-                                            <span class="mr-2">📋</span> Table Information
+                                            <span class="mr-2">ðŸ“‹</span> Table Information
                                         </h3>
                                         
                                         <?php if (isset($_SESSION['table_structure']) && isset($_SESSION['current_table'])): ?>
@@ -1168,7 +1177,7 @@ if (is_dir($currentPath)) {
                                                                 <tr class="border-b">
                                                                     <td class="px-2 py-1 font-mono"><?= htmlspecialchars($column['Field']) ?></td>
                                                                     <td class="px-2 py-1"><?= htmlspecialchars($column['Type']) ?></td>
-                                                                    <td class="px-2 py-1"><?= $column['Null'] === 'YES' ? '✅' : '❌' ?></td>
+                                                                    <td class="px-2 py-1"><?= $column['Null'] === 'YES' ? 'âœ…' : 'âŒ' ?></td>
                                                                     <td class="px-2 py-1"><?= htmlspecialchars($column['Key']) ?></td>
                                                                 </tr>
                                                             <?php endforeach; ?>
@@ -1179,7 +1188,7 @@ if (is_dir($currentPath)) {
                                             <?php unset($_SESSION['table_structure'], $_SESSION['current_table']); ?>
                                         <?php else: ?>
                                             <div class="text-center py-8 text-gray-500">
-                                                <p class="mb-2">📊 No table selected</p>
+                                                <p class="mb-2">ðŸ“Š No table selected</p>
                                                 <p class="text-sm">Select a table to view its structure</p>
                                             </div>
                                         <?php endif; ?>
@@ -1202,7 +1211,7 @@ if (is_dir($currentPath)) {
                                     <div class="bg-white rounded-lg shadow overflow-hidden">
                                         <div class="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
                                             <h3 class="text-lg font-medium flex items-center">
-                                                <span class="mr-2">📊</span> Query Results
+                                                <span class="mr-2">ðŸ“Š</span> Query Results
                                                 <span class="ml-2 text-sm text-gray-500">(<?= count($_SESSION['sql_result']) ?> rows)</span>
                                             </h3>
                                             <div class="flex space-x-2">
@@ -1249,7 +1258,7 @@ if (is_dir($currentPath)) {
                                 <!-- Recent Queries History -->
                                 <div class="bg-white rounded-lg shadow p-4">
                                     <h3 class="text-lg font-medium mb-4 flex items-center">
-                                        <span class="mr-2">📝</span> Query History
+                                        <span class="mr-2">ðŸ“</span> Query History
                                     </h3>
                                     <div id="queryHistory" class="space-y-2 max-h-40 overflow-y-auto">
                                         <!-- Query history will be populated by JavaScript -->
@@ -1272,8 +1281,8 @@ if (is_dir($currentPath)) {
         <div class="modal-content">
             <div class="modal-header">
                 <div>
-                    <h3 class="text-xl font-bold">✏️ Editing File</h3>
-                    <p class="text-sm opacity-90 mt-1">📄 <?= htmlspecialchars(basename($editFile)) ?> • 📁 <?= htmlspecialchars(dirname($editFile)) ?></p>
+                    <h3 class="text-xl font-bold">âœï¸ Editing File</h3>
+                    <p class="text-sm opacity-90 mt-1">ðŸ“„ <?= htmlspecialchars(basename($editFile)) ?> â€¢ ðŸ“ <?= htmlspecialchars(dirname($editFile)) ?></p>
                 </div>
                 <span class="close-btn" onclick="closeEditorModal()">&times;</span>
             </div>
@@ -1292,14 +1301,14 @@ if (is_dir($currentPath)) {
             <div class="modal-footer">
                 <div class="flex space-x-2">
                     <button type="button" onclick="saveEditorFile()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 font-medium shadow">
-                        💾 Save File (Ctrl+S)
+                        ðŸ’¾ Save File (Ctrl+S)
                     </button>
                     <button type="button" onclick="formatCode()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 font-medium shadow">
-                        🎨 Format Code
+                        ðŸŽ¨ Format Code
                     </button>
                 </div>
                 <button type="button" onclick="closeEditorModal()" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 font-medium shadow">
-                    ✖️ Close
+                    âœ–ï¸ Close
                 </button>
             </div>
         </div>
@@ -1348,7 +1357,7 @@ if (is_dir($currentPath)) {
                 folder.style.display = 'block';
                 toggleIcon.classList.remove('collapsed');
                 toggleIcon.classList.add('expanded');
-                toggleIcon.textContent = '▼';
+                toggleIcon.textContent = 'â–¼';
                 
                 // Save state to localStorage
                 saveTreeState(folderId, true);
@@ -1356,7 +1365,7 @@ if (is_dir($currentPath)) {
                 folder.style.display = 'none';
                 toggleIcon.classList.remove('expanded');
                 toggleIcon.classList.add('collapsed');
-                toggleIcon.textContent = '▶';
+                toggleIcon.textContent = 'â–¶';
                 
                 // Save state to localStorage
                 saveTreeState(folderId, false);
@@ -1384,7 +1393,7 @@ if (is_dir($currentPath)) {
                         if (toggleIcon) {
                             toggleIcon.classList.remove('collapsed');
                             toggleIcon.classList.add('expanded');
-                            toggleIcon.textContent = '▼';
+                            toggleIcon.textContent = 'â–¼';
                         }
                     }
                 }
@@ -1398,7 +1407,7 @@ if (is_dir($currentPath)) {
                 if (toggleIcon) {
                     toggleIcon.classList.remove('collapsed');
                     toggleIcon.classList.add('expanded');
-                    toggleIcon.textContent = '▼';
+                    toggleIcon.textContent = 'â–¼';
                 }
             });
         }
@@ -1410,7 +1419,7 @@ if (is_dir($currentPath)) {
                 if (toggleIcon) {
                     toggleIcon.classList.remove('expanded');
                     toggleIcon.classList.add('collapsed');
-                    toggleIcon.textContent = '▶';
+                    toggleIcon.textContent = 'â–¶';
                 }
             });
             // Clear saved states
@@ -1432,31 +1441,31 @@ if (is_dir($currentPath)) {
             
             if (element.classList.contains('expanded')) {
                 element.classList.remove('expanded');
-                icon.textContent = '▶';
+                icon.textContent = 'â–¶';
                 element.innerHTML = '';
             } else {
                 element.classList.add('expanded');
-                icon.textContent = '▼';
+                icon.textContent = 'â–¼';
                 
                 // Load tables for this database
                 fetch('?ajax=get_tables&database=' + encodeURIComponent(dbName))
                     .then(response => response.json())
                     .then(result => {
                         if (result.error) {
-                            element.innerHTML = `<div class="p-1 ml-4 text-sm text-red-500">⚠️ ${result.error}</div>`;
+                            element.innerHTML = `<div class="p-1 ml-4 text-sm text-red-500">âš ï¸ ${result.error}</div>`;
                         } else if (result.tables && result.tables.length > 0) {
                             let html = '';
                             result.tables.forEach(table => {
-                                html += `<div class="p-1 ml-4 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer" onclick="selectTable('${dbName}', '${table}')">📋 ${table}</div>`;
+                                html += `<div class="p-1 ml-4 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer" onclick="selectTable('${dbName}', '${table}')">ðŸ“‹ ${table}</div>`;
                             });
                             element.innerHTML = html;
                         } else {
-                            element.innerHTML = '<div class="p-1 ml-4 text-sm text-gray-400">📭 No tables found</div>';
+                            element.innerHTML = '<div class="p-1 ml-4 text-sm text-gray-400">ðŸ“­ No tables found</div>';
                         }
                     })
                     .catch(error => {
                         console.error('Fetch error:', error);
-                        element.innerHTML = '<div class="p-1 ml-4 text-sm text-red-500">⚠️ Network error. Check console for details.</div>';
+                        element.innerHTML = '<div class="p-1 ml-4 text-sm text-red-500">âš ï¸ Network error. Check console for details.</div>';
                     });
             }
         }
@@ -1501,7 +1510,7 @@ if (is_dir($currentPath)) {
                 .then(response => response.json())
                 .then(result => {
                     if (result.error) {
-                        tableSelect.innerHTML = `<option value="">⚠️ ${result.error}</option>`;
+                        tableSelect.innerHTML = `<option value="">âš ï¸ ${result.error}</option>`;
                     } else if (result.tables && result.tables.length > 0) {
                         let html = '<option value="">Select Table</option>';
                         result.tables.forEach(table => {
@@ -1630,17 +1639,17 @@ if (is_dir($currentPath)) {
             
             const systemInfo = `
 -- ================================================
--- 🖥️  SecureFileHub System Information
+-- ðŸ–¥ï¸  SecureFileHub System Information
 -- ================================================
 
--- 💻 Platform Details
+-- ðŸ’» Platform Details
 -- Operating System: ${systemName} ${systemRelease}
 -- Architecture: ${architecture}
 -- Machine Name: ${machineName}
 -- PHP Version: ${phpVersion}
 -- Platform Type: ${isLinux ? 'Linux/Unix' : 'Windows'}
 
--- 🗄️ MySQL System Information
+-- ðŸ—„ï¸ MySQL System Information
 SELECT 
     '=== MySQL Server Information ===' as info_section,
     VERSION() as mysql_version,
@@ -1654,7 +1663,7 @@ SELECT
     @@sql_mode as sql_mode,
     @@default_storage_engine as default_engine;
 
--- 📊 Server Status
+-- ðŸ“Š Server Status
 -- SELECT 
 --     '=== Server Status ===' as status_section,
 --     VARIABLE_NAME as setting_name,
@@ -1665,7 +1674,7 @@ SELECT
 --     'Innodb_buffer_pool_pages_total', 'Innodb_buffer_pool_pages_free'
 -- );
 
--- 🔍 Database Information
+-- ðŸ” Database Information
 -- SELECT 
 --     '=== Database Summary ===' as db_section,
 --     SCHEMA_NAME as database_name,
@@ -1906,16 +1915,33 @@ SELECT
             });
 
             function formatCode() {
-                if (window.editor) {
-                    try {
-                        window.editor.getAction('editor.action.formatDocument').run();
-                    } catch (e) {
-                        console.error('Format error:', e);
-                        alert('Format failed. Make sure the file type supports formatting.');
-                    }
-                } else {
+                if (!window.editor) {
                     console.error('Editor not initialized');
-                    alert('Editor not ready. Please wait a moment and try again.');
+                    alert('❌ Editor not ready. Please wait a moment and try again.');
+                    return;
+                }
+                
+                try {
+                    // Get the format action
+                    const formatAction = window.editor.getAction('editor.action.formatDocument');
+                    
+                    if (!formatAction) {
+                        alert('⚠️ Format Document action not available for this file type.');
+                        return;
+                    }
+                    
+                    // Trigger formatting
+                    formatAction.run().then(() => {
+                        console.log('Code formatted successfully');
+                        // Update the hidden textarea
+                        document.getElementById('content').value = window.editor.getValue();
+                    }).catch((err) => {
+                        console.error('Format error:', err);
+                        alert('❌ Format failed: ' + (err.message || 'Unknown error'));
+                    });
+                } catch (e) {
+                    console.error('Format error:', e);
+                    alert('❌ Format failed. Make sure the file type supports formatting.');
                 }
             }
 
@@ -1979,30 +2005,30 @@ SELECT
         }
 
         function showEditorInfo() {
-            alert(`📝 Code Editor Information:
+            alert(`ðŸ“ Code Editor Information:
 
-🎯 Purpose: 
-• Edit text files directly in your browser
-• Syntax highlighting for multiple languages
-• Professional code editing features
+ðŸŽ¯ Purpose: 
+â€¢ Edit text files directly in your browser
+â€¢ Syntax highlighting for multiple languages
+â€¢ Professional code editing features
 
-🚀 How to use:
-1. Click "✏️ Edit" next to any text file
+ðŸš€ How to use:
+1. Click "âœï¸ Edit" next to any text file
 2. The Monaco Editor will appear below
 3. Use "Toggle Editor" to show/hide the editor
 4. Save with Ctrl+S or the Save button
 
-💡 Supported files:
-• Code: PHP, JavaScript, HTML, CSS, Python, Java, C++
-• Data: JSON, XML, SQL
-• Text: TXT, MD, INI, LOG, CONF
+ðŸ’¡ Supported files:
+â€¢ Code: PHP, JavaScript, HTML, CSS, Python, Java, C++
+â€¢ Data: JSON, XML, SQL
+â€¢ Text: TXT, MD, INI, LOG, CONF
 
-✨ Features:
-• Syntax highlighting
-• Code formatting
-• Auto-completion
-• Error detection
-• Dark theme interface`);
+âœ¨ Features:
+â€¢ Syntax highlighting
+â€¢ Code formatting
+â€¢ Auto-completion
+â€¢ Error detection
+â€¢ Dark theme interface`);
         }
     </script>
 </body>
@@ -2010,29 +2036,37 @@ SELECT
 
 <?php
 // Helper function to render directory tree
+// Helper function to render directory tree
 function renderTree($items, $level = 0) {
     foreach ($items as $item) {
         $indent = str_repeat('  ', $level);
+        $isFolder = ($item['type'] ?? 'file') === 'folder';
         $hasChildren = !empty($item['children']);
         $itemId = 'tree-' . md5($item['path']);
         
         echo '<div class="tree-item-wrapper" data-path="' . htmlspecialchars($item['path']) . '">';
-        echo '<div class="tree-item p-1 text-sm hover:bg-gray-100 rounded flex items-center" onclick="' . ($hasChildren ? "toggleTreeFolder('$itemId')" : "navigateToFolder('" . htmlspecialchars($item['path']) . "')") . '">';
         
-        if ($hasChildren) {
-            echo '<span class="tree-toggle collapsed mr-1">▶</span>';
-            echo '<span class="mr-1">📁</span>';
-        } else {
-            echo '<span class="mr-1 ml-4">�</span>';
-        }
-        
-        echo '<span>' . htmlspecialchars($item['name']) . '</span>';
-        echo '</div>';
-        
-        if ($hasChildren) {
-            echo '<div class="tree-children ml-4" id="' . $itemId . '" style="display: none;">';
-            renderTree($item['children'], $level + 1);
+        if ($isFolder) {
+            // Folder with toggle
+            echo '<div class="tree-item p-1 text-sm hover:bg-gray-100 rounded flex items-center cursor-pointer" onclick="toggleTreeFolder(\'' . $itemId . '\')">';
+            echo '<span class="tree-toggle collapsed mr-1">â–¶</span>';
+            echo '<span class="mr-1">ðŸ“</span>';
+            echo '<span>' . htmlspecialchars($item['name']) . '</span>';
             echo '</div>';
+            
+            if ($hasChildren) {
+                echo '<div class="tree-children ml-4" id="' . $itemId . '" style="display: none;">';
+                renderTree($item['children'], $level + 1);
+                echo '</div>';
+            }
+        } else {
+            // File - make it clickable to edit
+            $icon = $item['icon'] ?? 'ðŸ“„';
+            $editLink = "?edit=" . urlencode($item['path']) . "&dir=" . urlencode(dirname($item['path']));
+            echo '<a href="' . htmlspecialchars($editLink) . '" class="tree-item p-1 text-sm hover:bg-blue-50 rounded flex items-center no-underline text-gray-700 ml-4">';
+            echo '<span class="mr-1">' . $icon . '</span>';
+            echo '<span>' . htmlspecialchars($item['name']) . '</span>';
+            echo '</a>';
         }
         
         echo '</div>';
