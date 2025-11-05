@@ -4,23 +4,45 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/jerickalmeda/SecureFileHub.svg)](https://github.com/jerickalmeda/SecureFileHub/issues)
-[![Version](https://img.shields.io/badge/Version-1.1-green.svg)](https://github.com/jerickalmeda/SecureFileHub/releases)
+[![Version](https://img.shields.io/badge/Version-2.0-brightgreen.svg)](https://github.com/jerickalmeda/SecureFileHub/releases)
 > **Cross-Platform PHP File Manager with Database Integration**
 
-A comprehensive, single-file PHP web application that functions as a secure online file manager with integrated MySQL database management capabilities. **Fully compatible with both Windows Server and Linux distributions** including Ubuntu, CentOS, Debian, Fedora, and more.
+A comprehensive, single-file PHP web application that functions as a secure online file manager with integrated MySQL database management capabilities. **Fully compatible with both Windows Server and Linux distributions** including Ubuntu, CentOS, Debian, Fedora, and more.d
 
 ## 🚀 Quick Demo
 
-![SecureFileHub Demo](https://via.placeholder.com/800x400/2563eb/ffffff?text=SecureFileHub+v1.1+Demo)
+![SecureFileHub Demo](https://via.placeholder.com/800x400/667eea/ffffff?text=SecureFileHub+v2.0+Demo)
 
 **Key Highlights:**
 - 🔐 **Single File Deployment** - Just upload one PHP file and you're ready!
-- 🎨 **Monaco Editor Integration** - Professional code editing with VS Code features
-- 🗄️ **Database Management** - Full MySQL administration capabilities
+- 🎨 **Modal Code Editor** - Full-screen Monaco editor with keyboard shortcuts
+- 🗄️ **Database Management** - Full MySQL administration with enhanced error handling
 - 🛡️ **Enterprise Security** - CSRF protection, session management, path sanitization
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
+- 📱 **Responsive Design** - Professional cPanel-style interface
 - 🌐 **Cross-Platform** - Windows Server, Linux distributions, Docker support
 - 🔒 **Unix Permissions** - Full Linux file permission display and management
+- 🌲 **Collapsible Tree** - Smart folder navigation with state persistence
+
+## ✨ What's New in v2.0
+
+### 🎯 Enhanced User Experience
+- **Full-Screen Modal Editor** - Edit files in a professional modal overlay
+- **Collapsible Directory Tree** - Folders collapse/expand with smooth animations
+- **Smart State Persistence** - Tree state saved in localStorage
+- **Expand/Collapse All** - Quick buttons to manage all folders at once
+
+### 🎨 Professional UI Overhaul
+- **cPanel-Style Design** - Modern, professional interface inspired by cPanel
+- **Gradient Header** - Beautiful header with breadcrumb navigation
+- **Card-Based Operations** - File operations in gradient cards with hover effects
+- **Icon Action Buttons** - Compact, intuitive action buttons with tooltips
+- **Enhanced Color Palette** - Professional color scheme with smooth transitions
+
+### 🔧 Technical Improvements
+- **Better Error Handling** - Detailed error messages for database operations
+- **Connection Diagnostics** - Clear feedback on database connection status
+- **Keyboard Shortcuts** - Ctrl+S to save, ESC to close modal
+- **Performance Optimizations** - Faster loading and smoother interactions
 
 ## ✨ Features
 
@@ -548,16 +570,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**🗂️ SecureFileHub v1.1**
+**🗂️ SecureFileHub v2.0**
 
-*Cross-Platform File & Database Management Made Simple*
+*Cross-Platform File & Database Management with Professional UI*
 
 [![GitHub](https://img.shields.io/github/stars/jerickalmeda/SecureFileHub?style=social)](https://github.com/jerickalmeda/SecureFileHub)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jerickalmeda?style=social)](https://twitter.com/jerickalmeda)
 
 **⭐ Star this project if you find it useful!**
 
-[Report Bug](https://github.com/jerickalmeda/SecureFileHub/issues) • [Request Feature](https://github.com/jerickalmeda/SecureFileHub/issues) • [Documentation](https://github.com/jerickalmeda/SecureFileHub/wiki) • [Download v1.1](https://github.com/jerickalmeda/SecureFileHub/releases/tag/v1.1)
+[Report Bug](https://github.com/jerickalmeda/SecureFileHub/issues) • [Request Feature](https://github.com/jerickalmeda/SecureFileHub/issues) • [Documentation](https://github.com/jerickalmeda/SecureFileHub/wiki) • [Download v2.0](https://github.com/jerickalmeda/SecureFileHub/releases/tag/v2.0)
 
 </div>
 
@@ -565,6 +587,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by the SecureFileHub team**
 
-*Supporting both Windows Server and Linux environments with enterprise-grade security*
+*Supporting both Windows Server and Linux environments with enterprise-grade security and professional cPanel-style interface*
 
-Last updated: September 2025
+Last updated: November 2025
