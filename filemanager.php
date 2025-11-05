@@ -65,17 +65,33 @@ function getDatabases() {
     }
 }
 
-// Get tables from database
+// Get tables from database with detailed error information
 function getTables($database) {
     $pdo = getDBConnection();
-    if (!$pdo) return [];
+    if (!$pdo) {
+        return ['error' => 'Database connection failed. Please check your database configuration.'];
+    }
     
     try {
-        $pdo->exec("USE `$database`");
+        // Validate database name
+        if (empty($database)) {
+            return ['error' => 'No database selected'];
+        }
+        
+        // Check if database exists
+        $stmt = $pdo->query("SHOW DATABASES LIKE " . $pdo->quote($database));
+        if ($stmt->rowCount() === 0) {
+            return ['error' => "Database '$database' does not exist"];
+        }
+        
+        $pdo->exec("USE `" . str_replace('`', '``', $database) . "`");
         $stmt = $pdo->query("SHOW TABLES");
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        return ['tables' => $tables, 'count' => count($tables)];
     } catch (PDOException $e) {
-        return [];
+        error_log("getTables error: " . $e->getMessage());
+        return ['error' => 'Database error: ' . $e->getMessage()];
     }
 }
 
@@ -610,6 +626,7 @@ if (is_dir($currentPath)) {
         .tree-children {
             display: none;
             margin-left: 20px;
+            transition: all 0.3s ease;
         }
         .tree-children.expanded {
             display: block;
@@ -622,20 +639,151 @@ if (is_dir($currentPath)) {
             height: calc(100vh - 70px);
             overflow-y: auto;
         }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 95%;
+            height: 90%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+        .modal-body {
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+        }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9fafb;
+            border-radius: 0 0 8px 8px;
+        }
+        #modalEditor {
+            width: 100%;
+            height: 100%;
+        }
+        .close-btn {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            line-height: 20px;
+            transition: transform 0.2s;
+        }
+        .close-btn:hover {
+            transform: scale(1.2);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        /* Collapsible Tree Icons */
+        .tree-toggle {
+            display: inline-block;
+            width: 16px;
+            transition: transform 0.3s;
+        }
+        .tree-toggle.collapsed {
+            transform: rotate(0deg);
+        }
+        .tree-toggle.expanded {
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-blue-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-xl font-bold">🗂️ SecureFileHub 
-                <span class="text-sm font-normal">
-                    (<?= IS_WINDOWS ? 'Windows' : 'Linux' ?> • PHP <?= PHP_VERSION ?>)
-                </span>
-            </h1>
-            <div class="flex items-center space-x-4">
-                <span class="text-sm">Welcome, <?= FM_USERNAME ?></span>
-                <a href="?logout" class="bg-red-500 px-3 py-1 rounded text-sm hover:bg-red-600">Logout</a>
+    <!-- Enhanced Professional Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-xl">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Left: Logo and Title -->
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">SecureFileHub</h1>
+                        <p class="text-xs opacity-90">v2.0 • Cross-Platform File Manager</p>
+                    </div>
+                </div>
+
+                <!-- Center: Breadcrumb Navigation -->
+                <div class="flex-1 mx-8">
+                    <div class="bg-white bg-opacity-10 rounded-lg px-4 py-2 backdrop-blur-sm">
+                        <div class="flex items-center text-sm">
+                            <span class="opacity-75">📍 Current Path:</span>
+                            <span class="ml-2 font-medium truncate" title="<?= htmlspecialchars($currentDir) ?>">
+                                <?= htmlspecialchars(substr($currentDir, 0, 60) . (strlen($currentDir) > 60 ? '...' : '')) ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: System Info and User -->
+                <div class="flex items-center space-x-6">
+                    <div class="text-right hidden md:block">
+                        <div class="text-xs opacity-75">System</div>
+                        <div class="text-sm font-semibold">
+                            <?= IS_WINDOWS ? '🪟 Windows' : '🐧 Linux' ?> • PHP <?= PHP_VERSION ?>
+                        </div>
+                    </div>
+                    <div class="h-10 w-px bg-white opacity-20"></div>
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right">
+                            <div class="text-xs opacity-75">Logged in as</div>
+                            <div class="text-sm font-semibold"><?= FM_USERNAME ?></div>
+                        </div>
+                        <a href="?logout" class="bg-red-500 bg-opacity-90 px-4 py-2 rounded-lg text-sm hover:bg-opacity-100 transition-all duration-200 font-medium shadow-lg">
+                            🚪 Logout
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -655,7 +803,17 @@ if (is_dir($currentPath)) {
 
             <!-- Files Tree -->
             <div id="filesContent" class="p-4 <?= $currentTab !== 'files' ? 'hidden' : '' ?>">
-                <h3 class="text-sm font-semibold text-gray-700 mb-3">Directory Structure</h3>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-semibold text-gray-700">Directory Structure</h3>
+                    <div class="flex space-x-1">
+                        <button onclick="expandAllFolders()" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200" title="Expand All Folders">
+                            ➕
+                        </button>
+                        <button onclick="collapseAllFolders()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200" title="Collapse All Folders">
+                            ➖
+                        </button>
+                    </div>
+                </div>
                 <div class="tree">
                     <?php renderTree($directoryTree); ?>
                 </div>
@@ -728,47 +886,47 @@ if (is_dir($currentPath)) {
                                 <?php endif; ?>
                             </div>
 
-                            <!-- File Operations -->
+                            <!-- File Operations Cards -->
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                                 <!-- Upload File -->
-                                <form method="POST" enctype="multipart/form-data" class="bg-blue-50 p-3 rounded">
+                                <form method="POST" enctype="multipart/form-data" class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
                                     <input type="hidden" name="action" value="upload">
                                     <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
                                     <input type="hidden" name="tab" value="files">
                                     <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                                    <label class="block text-sm font-medium mb-2">📤 Upload File</label>
-                                    <input type="file" name="file" required class="w-full text-xs mb-2">
-                                    <button type="submit" class="w-full bg-blue-500 text-white py-1 px-2 rounded text-sm hover:bg-blue-600">Upload</button>
+                                    <label class="block text-sm font-semibold mb-2 text-blue-700">📤 Upload File</label>
+                                    <input type="file" name="file" required class="w-full text-xs mb-2 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600 file:cursor-pointer">
+                                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">Upload</button>
                                 </form>
 
                                 <!-- Create Folder -->
-                                <form method="POST" class="bg-green-50 p-3 rounded">
+                                <form method="POST" class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200 shadow-sm hover:shadow-md transition-shadow">
                                     <input type="hidden" name="action" value="create_folder">
                                     <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
                                     <input type="hidden" name="tab" value="files">
                                     <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                                    <label class="block text-sm font-medium mb-2">📁 Create Folder</label>
-                                    <input type="text" name="folder_name" required placeholder="Folder name" class="w-full px-2 py-1 border rounded text-sm mb-2">
-                                    <button type="submit" class="w-full bg-green-500 text-white py-1 px-2 rounded text-sm hover:bg-green-600">Create</button>
+                                    <label class="block text-sm font-semibold mb-2 text-green-700">📁 Create Folder</label>
+                                    <input type="text" name="folder_name" required placeholder="Folder name" class="w-full px-3 py-2 border border-green-300 rounded-lg text-sm mb-2 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <button type="submit" class="w-full bg-green-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">Create</button>
                                 </form>
 
                                 <!-- Create File -->
-                                <form method="POST" class="bg-yellow-50 p-3 rounded">
+                                <form method="POST" class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200 shadow-sm hover:shadow-md transition-shadow">
                                     <input type="hidden" name="action" value="create_file">
                                     <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
                                     <input type="hidden" name="tab" value="files">
                                     <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                                    <label class="block text-sm font-medium mb-2">📝 Create File</label>
-                                    <input type="text" name="file_name" required placeholder="file.txt" class="w-full px-2 py-1 border rounded text-sm mb-2">
-                                    <button type="submit" class="w-full bg-yellow-500 text-white py-1 px-2 rounded text-sm hover:bg-yellow-600">Create</button>
+                                    <label class="block text-sm font-semibold mb-2 text-yellow-700">📝 Create File</label>
+                                    <input type="text" name="file_name" required placeholder="file.txt" class="w-full px-3 py-2 border border-yellow-300 rounded-lg text-sm mb-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                                    <button type="submit" class="w-full bg-yellow-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors shadow-sm">Create</button>
                                 </form>
 
-                                <!-- Refresh -->
-                                <div class="bg-gray-50 p-3 rounded">
-                                    <label class="block text-sm font-medium mb-2">🔄 Actions</label>
-                                    <a href="?tab=files" class="block w-full bg-gray-500 text-white py-1 px-2 rounded text-sm text-center hover:bg-gray-600 mb-1">Refresh</a>
+                                <!-- Actions -->
+                                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                                    <label class="block text-sm font-semibold mb-2 text-gray-700">🔄 Quick Actions</label>
+                                    <a href="?tab=files" class="block w-full bg-gray-600 text-white py-2 px-3 rounded-lg text-sm text-center font-medium hover:bg-gray-700 transition-colors shadow-sm mb-2">Refresh View</a>
                                     <?php if ($editFile): ?>
-                                        <button onclick="toggleEditor()" class="w-full bg-purple-500 text-white py-1 px-2 rounded text-sm hover:bg-purple-600">Hide Editor</button>
+                                        <button onclick="toggleEditor()" class="w-full bg-purple-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm">Hide Editor</button>
                                     <?php else: ?>
                                         <button onclick="showEditorInfo()" class="w-full bg-purple-500 text-white py-1 px-2 rounded text-sm hover:bg-purple-600">Editor Info</button>
                                     <?php endif; ?>
@@ -828,16 +986,24 @@ if (is_dir($currentPath)) {
                                                 </td>
                                                 <?php endif; ?>
                                                 <td class="px-4 py-3">
-                                                    <div class="flex space-x-2">
+                                                    <div class="flex space-x-1">
                                                         <?php if (!$item['is_dir']): ?>
-                                                            <a href="?download=<?= urlencode($item['path']) ?>" class="text-blue-600 hover:underline text-sm">📥 Download</a>
+                                                            <a href="?download=<?= urlencode($item['path']) ?>" class="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded text-xs font-medium transition-colors" title="Download File">
+                                                                📥
+                                                            </a>
                                                             <?php if ($item['editable']): ?>
-                                                                <a href="?edit=<?= urlencode($item['path']) ?>&dir=<?= urlencode($currentDir) ?>&tab=files" class="text-green-600 hover:underline text-sm">✏️ Edit</a>
+                                                                <a href="?edit=<?= urlencode($item['path']) ?>&dir=<?= urlencode($currentDir) ?>&tab=files" class="inline-flex items-center px-2 py-1 bg-green-50 text-green-600 hover:bg-green-100 rounded text-xs font-medium transition-colors" title="Edit File">
+                                                                    ✏️
+                                                                </a>
                                                             <?php endif; ?>
                                                         <?php endif; ?>
                                                         
-                                                        <button onclick="renameItem('<?= htmlspecialchars($item['path']) ?>', '<?= htmlspecialchars($item['name']) ?>')" class="text-yellow-600 hover:underline text-sm">✏️ Rename</button>
-                                                        <button onclick="deleteItem('<?= htmlspecialchars($item['path']) ?>')" class="text-red-600 hover:underline text-sm">🗑️ Delete</button>
+                                                        <button onclick="renameItem('<?= htmlspecialchars($item['path']) ?>', '<?= htmlspecialchars($item['name']) ?>')" class="inline-flex items-center px-2 py-1 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 rounded text-xs font-medium transition-colors" title="Rename">
+                                                            ✏️
+                                                        </button>
+                                                        <button onclick="deleteItem('<?= htmlspecialchars($item['path']) ?>')" class="inline-flex items-center px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-xs font-medium transition-colors" title="Delete">
+                                                            🗑️
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1086,34 +1252,50 @@ if (is_dir($currentPath)) {
                     </div>
                 </div>
 
-                <!-- Code Editor -->
-                <?php if ($editFile): ?>
-                    <div class="bg-white rounded-lg shadow mt-6 p-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-medium">✏️ Editing: <?= htmlspecialchars(basename($editFile)) ?></h3>
-                            <a href="?tab=files&dir=<?= urlencode($currentDir) ?>" class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600">Close Editor</a>
-                        </div>
-                        
-                        <form method="POST" id="editorForm">
-                            <input type="hidden" name="action" value="save_file">
-                            <input type="hidden" name="file_path" value="<?= htmlspecialchars($_GET['edit']) ?>">
-                            <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
-                            <input type="hidden" name="tab" value="files">
-                            <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                            
-                            <div id="editor" class="monaco-editor border rounded"></div>
-                            <textarea name="content" id="content" style="display: none;"><?= htmlspecialchars($editContent) ?></textarea>
-                            
-                            <div class="mt-4 flex space-x-2">
-                                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">💾 Save File</button>
-                                <button type="button" onclick="formatCode()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">🎨 Format</button>
-                            </div>
-                        </form>
-                    </div>
-                <?php endif; ?>
+                <!-- File editor now opens in modal - see modal section at bottom -->
             </div>
         </div>
     </div>
+
+    <!-- Editor Modal -->
+    <?php if ($editFile): ?>
+    <div id="editorModal" class="modal show">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 class="text-xl font-bold">✏️ Editing File</h3>
+                    <p class="text-sm opacity-90 mt-1">📄 <?= htmlspecialchars(basename($editFile)) ?> • 📁 <?= htmlspecialchars(dirname($editFile)) ?></p>
+                </div>
+                <span class="close-btn" onclick="closeEditorModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="editorForm">
+                    <input type="hidden" name="action" value="save_file">
+                    <input type="hidden" name="file_path" value="<?= htmlspecialchars($_GET['edit']) ?>">
+                    <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
+                    <input type="hidden" name="tab" value="files">
+                    <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
+                    
+                    <div id="modalEditor"></div>
+                    <textarea name="content" id="content" style="display: none;"><?= htmlspecialchars($editContent) ?></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="flex space-x-2">
+                    <button type="button" onclick="saveEditorFile()" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 font-medium shadow">
+                        💾 Save File (Ctrl+S)
+                    </button>
+                    <button type="button" onclick="formatCode()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 font-medium shadow">
+                        🎨 Format Code
+                    </button>
+                </div>
+                <button type="button" onclick="closeEditorModal()" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 font-medium shadow">
+                    ✖️ Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Hidden forms for actions -->
     <form method="POST" id="deleteForm" style="display: none;">
@@ -1148,7 +1330,89 @@ if (is_dir($currentPath)) {
                 : 'flex-1 py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700';
         }
 
-        // Tree navigation
+        // Tree navigation with collapsible folders
+        function toggleTreeFolder(folderId) {
+            const folder = document.getElementById(folderId);
+            const toggleIcon = folder.previousElementSibling.querySelector('.tree-toggle');
+            
+            if (folder.style.display === 'none') {
+                folder.style.display = 'block';
+                toggleIcon.classList.remove('collapsed');
+                toggleIcon.classList.add('expanded');
+                toggleIcon.textContent = '▼';
+                
+                // Save state to localStorage
+                saveTreeState(folderId, true);
+            } else {
+                folder.style.display = 'none';
+                toggleIcon.classList.remove('expanded');
+                toggleIcon.classList.add('collapsed');
+                toggleIcon.textContent = '▶';
+                
+                // Save state to localStorage
+                saveTreeState(folderId, false);
+            }
+        }
+
+        function navigateToFolder(path) {
+            window.location.href = '?tab=files&dir=' + encodeURIComponent(path);
+        }
+
+        function saveTreeState(folderId, isExpanded) {
+            let treeStates = JSON.parse(localStorage.getItem('treeStates') || '{}');
+            treeStates[folderId] = isExpanded;
+            localStorage.setItem('treeStates', JSON.stringify(treeStates));
+        }
+
+        function restoreTreeStates() {
+            let treeStates = JSON.parse(localStorage.getItem('treeStates') || '{}');
+            for (let folderId in treeStates) {
+                if (treeStates[folderId]) {
+                    const folder = document.getElementById(folderId);
+                    if (folder) {
+                        const toggleIcon = folder.previousElementSibling.querySelector('.tree-toggle');
+                        folder.style.display = 'block';
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('collapsed');
+                            toggleIcon.classList.add('expanded');
+                            toggleIcon.textContent = '▼';
+                        }
+                    }
+                }
+            }
+        }
+
+        function expandAllFolders() {
+            document.querySelectorAll('.tree-children').forEach(folder => {
+                folder.style.display = 'block';
+                const toggleIcon = folder.previousElementSibling.querySelector('.tree-toggle');
+                if (toggleIcon) {
+                    toggleIcon.classList.remove('collapsed');
+                    toggleIcon.classList.add('expanded');
+                    toggleIcon.textContent = '▼';
+                }
+            });
+        }
+
+        function collapseAllFolders() {
+            document.querySelectorAll('.tree-children').forEach(folder => {
+                folder.style.display = 'none';
+                const toggleIcon = folder.previousElementSibling.querySelector('.tree-toggle');
+                if (toggleIcon) {
+                    toggleIcon.classList.remove('expanded');
+                    toggleIcon.classList.add('collapsed');
+                    toggleIcon.textContent = '▶';
+                }
+            });
+            // Clear saved states
+            localStorage.removeItem('treeStates');
+        }
+
+        // Initialize tree states on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            restoreTreeStates();
+        });
+
         function toggleTreeItem(path) {
             window.location.href = '?tab=files&dir=' + encodeURIComponent(path);
         }
@@ -1168,15 +1432,22 @@ if (is_dir($currentPath)) {
                 // Load tables for this database
                 fetch('?ajax=get_tables&database=' + encodeURIComponent(dbName))
                     .then(response => response.json())
-                    .then(tables => {
-                        let html = '';
-                        tables.forEach(table => {
-                            html += `<div class="p-1 ml-4 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer" onclick="selectTable('${dbName}', '${table}')">📋 ${table}</div>`;
-                        });
-                        element.innerHTML = html;
+                    .then(result => {
+                        if (result.error) {
+                            element.innerHTML = `<div class="p-1 ml-4 text-sm text-red-500">⚠️ ${result.error}</div>`;
+                        } else if (result.tables && result.tables.length > 0) {
+                            let html = '';
+                            result.tables.forEach(table => {
+                                html += `<div class="p-1 ml-4 text-sm text-gray-600 hover:bg-gray-100 rounded cursor-pointer" onclick="selectTable('${dbName}', '${table}')">📋 ${table}</div>`;
+                            });
+                            element.innerHTML = html;
+                        } else {
+                            element.innerHTML = '<div class="p-1 ml-4 text-sm text-gray-400">📭 No tables found</div>';
+                        }
                     })
                     .catch(error => {
-                        element.innerHTML = '<div class="p-1 ml-4 text-sm text-red-500">Error loading tables</div>';
+                        console.error('Fetch error:', error);
+                        element.innerHTML = '<div class="p-1 ml-4 text-sm text-red-500">⚠️ Network error. Check console for details.</div>';
                     });
             }
         }
@@ -1219,15 +1490,22 @@ if (is_dir($currentPath)) {
             
             fetch('?ajax=get_tables&database=' + encodeURIComponent(database))
                 .then(response => response.json())
-                .then(tables => {
-                    let html = '<option value="">Select Table</option>';
-                    tables.forEach(table => {
-                        html += `<option value="${table}">${table}</option>`;
-                    });
-                    tableSelect.innerHTML = html;
+                .then(result => {
+                    if (result.error) {
+                        tableSelect.innerHTML = `<option value="">⚠️ ${result.error}</option>`;
+                    } else if (result.tables && result.tables.length > 0) {
+                        let html = '<option value="">Select Table</option>';
+                        result.tables.forEach(table => {
+                            html += `<option value="${table}">${table}</option>`;
+                        });
+                        tableSelect.innerHTML = html;
+                    } else {
+                        tableSelect.innerHTML = '<option value="">No tables found</option>';
+                    }
                 })
                 .catch(error => {
-                    tableSelect.innerHTML = '<option value="">Error loading tables</option>';
+                    console.error('Fetch error:', error);
+                    tableSelect.innerHTML = '<option value="">Network error - check console</option>';
                 });
         }
 
@@ -1541,7 +1819,7 @@ SELECT
             }
         }
 
-        // Monaco Editor
+        // Monaco Editor for Modal
         <?php if ($editFile): ?>
             require.config({ 
                 paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' }
@@ -1564,21 +1842,28 @@ SELECT
                     'c': 'c',
                     'cpp': 'cpp',
                     'h': 'c',
-                    'sql': 'sql'
+                    'sql': 'sql',
+                    'md': 'markdown',
+                    'txt': 'plaintext'
                 };
                 
                 if (languageMap[fileExtension]) {
                     language = languageMap[fileExtension];
                 }
 
-                editor = monaco.editor.create(document.getElementById('editor'), {
+                editor = monaco.editor.create(document.getElementById('modalEditor'), {
                     value: <?= json_encode($editContent) ?>,
                     language: language,
                     theme: 'vs-dark',
                     automaticLayout: true,
-                    minimap: { enabled: false },
+                    minimap: { enabled: true },
                     lineNumbers: 'on',
-                    wordWrap: 'on'
+                    wordWrap: 'on',
+                    fontSize: 14,
+                    scrollBeyondLastLine: false,
+                    renderWhitespace: 'selection',
+                    folding: true,
+                    lineDecorationsWidth: 10
                 });
 
                 // Make editor globally accessible
@@ -1588,6 +1873,9 @@ SELECT
                 editor.onDidChangeModelContent(function() {
                     document.getElementById('content').value = editor.getValue();
                 });
+
+                // Focus editor
+                editor.focus();
             });
 
             function formatCode() {
@@ -1596,11 +1884,33 @@ SELECT
                 }
             }
 
+            function saveEditorFile() {
+                document.getElementById('editorForm').submit();
+            }
+
+            function closeEditorModal() {
+                if (confirm('Close editor? Any unsaved changes will be lost.')) {
+                    window.location.href = '?tab=files&dir=<?= urlencode($currentDir) ?>';
+                }
+            }
+
             // Save with Ctrl+S
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 's') {
                     e.preventDefault();
-                    document.getElementById('editorForm').submit();
+                    saveEditorFile();
+                }
+                // Close modal with ESC
+                if (e.key === 'Escape') {
+                    closeEditorModal();
+                }
+            });
+
+            // Prevent accidental page close
+            window.addEventListener('beforeunload', function (e) {
+                if (editor && editor.getValue() !== <?= json_encode($editContent) ?>) {
+                    e.preventDefault();
+                    e.returnValue = '';
                 }
             });
         <?php endif; ?>
@@ -1665,15 +1975,29 @@ SELECT
 function renderTree($items, $level = 0) {
     foreach ($items as $item) {
         $indent = str_repeat('  ', $level);
-        echo '<div class="tree-item p-1 text-sm hover:bg-gray-100 rounded cursor-pointer" onclick="toggleTreeItem(\'' . htmlspecialchars($item['path']) . '\')">';
-        echo $indent . '📁 ' . htmlspecialchars($item['name']);
+        $hasChildren = !empty($item['children']);
+        $itemId = 'tree-' . md5($item['path']);
+        
+        echo '<div class="tree-item-wrapper" data-path="' . htmlspecialchars($item['path']) . '">';
+        echo '<div class="tree-item p-1 text-sm hover:bg-gray-100 rounded flex items-center" onclick="' . ($hasChildren ? "toggleTreeFolder('$itemId')" : "navigateToFolder('" . htmlspecialchars($item['path']) . "')") . '">';
+        
+        if ($hasChildren) {
+            echo '<span class="tree-toggle collapsed mr-1">▶</span>';
+            echo '<span class="mr-1">📁</span>';
+        } else {
+            echo '<span class="mr-1 ml-4">�</span>';
+        }
+        
+        echo '<span>' . htmlspecialchars($item['name']) . '</span>';
         echo '</div>';
         
-        if (!empty($item['children'])) {
-            echo '<div class="ml-4">';
+        if ($hasChildren) {
+            echo '<div class="tree-children ml-4" id="' . $itemId . '" style="display: none;">';
             renderTree($item['children'], $level + 1);
             echo '</div>';
         }
+        
+        echo '</div>';
     }
 }
 
@@ -1681,7 +2005,8 @@ function renderTree($items, $level = 0) {
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get_tables' && isAuthenticated()) {
     $database = $_GET['database'] ?? '';
     header('Content-Type: application/json');
-    echo json_encode(getTables($database));
+    $result = getTables($database);
+    echo json_encode($result);
     exit;
 }
 
