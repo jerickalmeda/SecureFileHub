@@ -682,6 +682,13 @@ if (is_dir($currentPath)) {
             flex: 1;
             overflow: hidden;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-body form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
         .modal-footer {
             padding: 16px 24px;
@@ -695,6 +702,8 @@ if (is_dir($currentPath)) {
         #modalEditor {
             width: 100%;
             height: 100%;
+            flex: 1;
+            min-height: 0;
         }
         .close-btn {
             font-size: 28px;
@@ -1269,14 +1278,14 @@ if (is_dir($currentPath)) {
                 <span class="close-btn" onclick="closeEditorModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form method="POST" id="editorForm">
+                <form method="POST" id="editorForm" style="height: 100%; display: flex; flex-direction: column;">
                     <input type="hidden" name="action" value="save_file">
                     <input type="hidden" name="file_path" value="<?= htmlspecialchars($_GET['edit']) ?>">
                     <input type="hidden" name="current_dir" value="<?= htmlspecialchars($currentDir) ?>">
                     <input type="hidden" name="tab" value="files">
                     <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
                     
-                    <div id="modalEditor"></div>
+                    <div id="modalEditor" style="flex: 1; min-height: 0;"></div>
                     <textarea name="content" id="content" style="display: none;"><?= htmlspecialchars($editContent) ?></textarea>
                 </form>
             </div>
@@ -1851,31 +1860,49 @@ SELECT
                     language = languageMap[fileExtension];
                 }
 
-                editor = monaco.editor.create(document.getElementById('modalEditor'), {
-                    value: <?= json_encode($editContent) ?>,
-                    language: language,
-                    theme: 'vs-dark',
-                    automaticLayout: true,
-                    minimap: { enabled: true },
-                    lineNumbers: 'on',
-                    wordWrap: 'on',
-                    fontSize: 14,
-                    scrollBeyondLastLine: false,
-                    renderWhitespace: 'selection',
-                    folding: true,
-                    lineDecorationsWidth: 10
-                });
+                // Small delay to ensure modal is fully rendered
+                setTimeout(function() {
+                    const editorContainer = document.getElementById('modalEditor');
+                    
+                    if (!editorContainer) {
+                        console.error('Editor container not found!');
+                        return;
+                    }
 
-                // Make editor globally accessible
-                window.editor = editor;
+                    editor = monaco.editor.create(editorContainer, {
+                        value: <?= json_encode($editContent) ?>,
+                        language: language,
+                        theme: 'vs-dark',
+                        automaticLayout: true,
+                        minimap: { enabled: true },
+                        lineNumbers: 'on',
+                        wordWrap: 'on',
+                        fontSize: 14,
+                        scrollBeyondLastLine: false,
+                        renderWhitespace: 'selection',
+                        folding: true,
+                        lineDecorationsWidth: 10,
+                        glyphMargin: true
+                    });
 
-                // Update hidden textarea when content changes
-                editor.onDidChangeModelContent(function() {
-                    document.getElementById('content').value = editor.getValue();
-                });
+                    // Make editor globally accessible
+                    window.editor = editor;
 
-                // Focus editor
-                editor.focus();
+                    // Force layout update after creation
+                    setTimeout(function() {
+                        if (editor) {
+                            editor.layout();
+                        }
+                    }, 100);
+
+                    // Update hidden textarea when content changes
+                    editor.onDidChangeModelContent(function() {
+                        document.getElementById('content').value = editor.getValue();
+                    });
+
+                    // Focus editor
+                    editor.focus();
+                }, 200);
             });
 
             function formatCode() {
